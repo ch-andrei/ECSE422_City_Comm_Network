@@ -10,4 +10,4 @@ Algorithm:
 Input: N, [Ci], [Ri], a_b
 number of cities, N(N-1)/2 cost constraint values. N(N-1)/2 reliability contraint values.
 (NOTE: only N(N-1)/2 values are needed because matrices are symmetrical)
-Output: Graph G with N vertices and E edges 
+Output: Graphs G with N vertices and E edges

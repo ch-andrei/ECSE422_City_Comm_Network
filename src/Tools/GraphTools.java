@@ -1,12 +1,17 @@
 package Tools;
 
+import Graphs.Edge;
 import Graphs.Graph;
 import Graphs.NavigationGraph.NavGraph;
 import Graphs.NetworkGraph.RCEdge;
+import Graphs.NetworkGraph.RCGraph;
 
 import javax.tools.Tool;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Created by Andrei-ch on 2016-02-28.
@@ -15,10 +20,37 @@ public class GraphTools {
 
 
     /**
-     * Get a minimum spanning tree from a graph with weighted edges
+     * Get a maximum spanning tree from a graph with weighted edges
+     * Kruskal's algorithm
      */
-    public void minimum_spanning_tree(Graph G) {
+    public static void minimum_cost_spanning_tree(RCGraph G) {
+        Queue<Edge> mst = new LinkedList<Edge>();
+        RCGraph copyG = new RCGraph(G);
+        Edge[] edges = (copyG.getE());
 
+        List<Edge> e_list = Arrays.asList(edges);
+        e_list.sort((e1, e2) -> {
+            return (new Double(((RCEdge)e1).getCost()).compareTo(((RCEdge)e2).getCost()));
+        });
+
+        int index = 0;
+        while (!GraphTools.checkConnectedG(copyG) && mst.size() < G.getN() - 1 && index < G.getTotal_entries()) {
+            copyG.getAdjacencyMatrix()[index] = 1;
+            if (GraphTools.findCycleEdge(copyG) != -1){
+                copyG.getAdjacencyMatrix()[index] = 0;
+            } else {
+                mst.add(new Edge(copyG.getE()[index]));
+            }
+            index++;
+        }
+
+        index = 0;
+        for (Edge e : mst){
+            int i = e.getV1().getTag();
+            int j = e.getV2().getTag();
+            int ij = GraphTools.matrixToArrayIndex(i, j, G.getN());
+            G.getAdjacencyMatrix()[ij] = 1;
+        }
     }
 
     /**
@@ -67,7 +99,6 @@ public class GraphTools {
     }
 
     /**
-     *
      * @param G
      * @param edgeIndex
      * @return
@@ -85,10 +116,10 @@ public class GraphTools {
                 continue;
             int ij1 = GraphTools.matrixToArrayIndex(v1, index, G.getN());
             int ij2 = GraphTools.matrixToArrayIndex(v2, index, G.getN());
-            if (G.getAdjacencyMatrix()[ij1] != 0){
+            if (G.getAdjacencyMatrix()[ij1] != 0) {
                 if (v2 == index)
                     continue;
-                if (G.getAdjacencyMatrix()[ij2] != 0){
+                if (G.getAdjacencyMatrix()[ij2] != 0) {
                     RCEdge e = (RCEdge) G.getE()[ij2];
                     double newR = rParalel(e.getReliability(), ((RCEdge) G.getE()[edgeIndex]).getReliability());
                     e.setReliability(newR);
@@ -97,7 +128,7 @@ public class GraphTools {
         }
 
         // disconnect v1
-        for (int i = 0; i < G.getN(); i++){
+        for (int i = 0; i < G.getN(); i++) {
             if (i == v1)
                 continue;
             int ij = GraphTools.matrixToArrayIndex(v1, i, G.getN());
@@ -106,7 +137,6 @@ public class GraphTools {
     }
 
     /**
-     *
      * @param G
      * @param edgeIndex
      * @return
@@ -116,42 +146,44 @@ public class GraphTools {
     }
 
     /**
-     *
      * @param G
      * @return
      */
     public static int findCycleEdge(Graph G) {
-        NavGraph nG = new NavGraph(G);
-        Queue<Integer[]> queue = new LinkedList<Integer[]>();
-        nG.getVisited()[0] = true;
-        queue.add(new Integer[]{0,-1});
-        Integer[] crt;
-        while (!queue.isEmpty()) {
-            crt = queue.remove();
-            for (int next = 0; next < nG.getN(); next++) {
-                if (crt[0] == next || crt [1] == next)
-                    continue;
-                int ij = matrixToArrayIndex(crt[0], next, nG.getN());
-                if (nG.getAdjacencyMatrix()[ij] != 0) {
-                    if (nG.getVisited()[next]) {
-                        // found a cycle
-                        return ij;
-                    } else if (!nG.getVisited()[next]){
-                        nG.getVisited()[next] = true;
-                        queue.add(new Integer [] {next,crt[0]});
+        int start = 0;
+        while (start < G.getN()) {
+            NavGraph nG = new NavGraph(G);
+            Queue<Integer[]> queue = new LinkedList<Integer[]>();
+            nG.getVisited()[start] = true;
+            queue.add(new Integer[]{start, -1});
+            Integer[] crt;
+            while (!queue.isEmpty()) {
+                crt = queue.remove();
+                for (int next = 0; next < nG.getN(); next++) {
+                    if (crt[0] == next || crt[1] == next)
+                        continue;
+                    int ij = matrixToArrayIndex(crt[0], next, nG.getN());
+                    if (nG.getAdjacencyMatrix()[ij] != 0) {
+                        if (nG.getVisited()[next]) {
+                            // found a cycle
+                            return ij;
+                        } else if (!nG.getVisited()[next]) {
+                            nG.getVisited()[next] = true;
+                            queue.add(new Integer[]{next, crt[0]});
+                        }
                     }
                 }
             }
+            start++;
         }
         return -1;
     }
 
     /**
-     *
      * @param G
      * @return
      */
-    public static boolean checkConnectedG(Graph G){
+    public static boolean checkConnectedG(Graph G) {
         NavGraph nG = new NavGraph(G);
         Queue<Integer> queue = new LinkedList<Integer>();
         nG.getVisited()[0] = true;
@@ -170,10 +202,67 @@ public class GraphTools {
                 }
             }
         }
-        for (boolean visited : nG.getVisited()){
+        for (boolean visited : nG.getVisited()) {
             if (!visited) return false;
         }
         return true;
+    }
+
+    public static RCGraph buildGraphFromFile(String filename, Integer[] a_b, double[] RC) {
+        String constraints = Tools.readConstrains("./resources/" + filename);
+        if (constraints.isEmpty())
+            return null;
+
+        String[] vals = null;
+        try {
+            vals = constraints.split("\\s+");
+        } catch (PatternSyntaxException ex) {
+            ex.printStackTrace();
+        }
+
+        double[] d_vals = null;
+        if (vals != null) {
+            d_vals = new double[vals.length];
+            for (int i = 0; i < vals.length; i++) {
+                d_vals[i] = Double.parseDouble(vals[i]);
+            }
+        }
+
+        int index = (int) (d_vals[0] + (d_vals[0] * (d_vals[0] - 1) / 2));
+        if (a_b != null)
+            a_b[0] = Integer.parseInt(vals[index]);
+        if (RC != null) {
+            RC[0] = Integer.parseInt(vals[index + 1]);
+            RC[1] = Integer.parseInt(vals[index + 2]);
+        }
+        return buildRCGraphFromString(d_vals);
+    }
+
+    private static RCGraph buildRCGraphFromString(double[] d_vals) {
+        // split constraints
+        if (d_vals == null)
+            return null;
+
+        int N, total_entries;
+        double[] costs, reliabilities;
+
+        N = (int) d_vals[0];
+        total_entries = N * (N - 1) / 2;
+
+        costs = new double[total_entries];
+        reliabilities = new double[total_entries];
+
+        try {
+            for (int i = 1; i < total_entries; i++) {
+                costs[i] = d_vals[i];
+                reliabilities[i] = d_vals[i + total_entries];
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return new RCGraph(N, costs, reliabilities);
     }
 
     public static double rSeries(double r1, double r2) {

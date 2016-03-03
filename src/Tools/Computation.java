@@ -18,7 +18,6 @@ public class Computation {
      * @return
      */
     public static double computeNetworkReliability(RCGraph G) {
-        // perform parallel and degree-2 reduction on individual edges
         RCGraph copyG = new RCGraph(G);
         simpleReduce(copyG);
         if ( !GraphTools.checkConnectedG(copyG) )
@@ -67,17 +66,21 @@ public class Computation {
         return R;
     }
 
-    private static void simpleReduce(Graph G) {
-
-        // TODO
-        /*
-        parallel reduction o-o-o -> o-o
-         */
-
-        // TODO
-        /*
-        degree-n reduction o=o -> o-o
-         */
-
+    private static void simpleReduce(RCGraph G) {
+        for (int ij = 0 ; ij < G.getTotal_entries(); ij++){
+            RCEdge e = (RCEdge)(G.getE()[ij]);
+            if (G.getAdjacencyMatrix()[ij] <= 1)
+                continue;
+            if (G.getAdjacencyMatrix()[ij] == 2){
+                double nR = GraphTools.rParalel(e.getReliability(), e.getReliability());
+                e.setReliability(nR);
+            }
+            else if (G.getAdjacencyMatrix()[ij] == 3){
+                double nR = GraphTools.rParalel(e.getReliability(), e.getReliability());
+                nR = GraphTools.rParalel(nR, e.getReliability());
+                e.setReliability(nR);
+            }
+            G.getAdjacencyMatrix()[ij] = 1;
+        }
     }
 }

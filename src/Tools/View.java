@@ -100,7 +100,7 @@ public class View extends JFrame {
                     int rY = (posY + vPosY) / 2 + 20;
                     g2.setColor(c);
                     g.setFont(new Font("TimesRoman", Font.PLAIN, 13));
-                    g.drawString("R = " + ((RCEdge) e).getReliability(), rX, rY);
+                    g.drawString("[" + G.getAdjacencyMatrix()[index] + "] R = " +((RCEdge) e).getReliability() + ", C = " +((RCEdge) e).getCost(), rX, rY);
                 }
                 index++;
             }

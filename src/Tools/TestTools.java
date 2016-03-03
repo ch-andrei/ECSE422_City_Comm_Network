@@ -112,7 +112,31 @@ public class TestTools {
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(3, 1, 6)] = 1;
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(2, 3, 6)] = 1;
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(4, 5, 6)] = 1;
-        V = new View(G);
         Tools.print("Computing Network R: " + Computation.computeNetworkReliability(G));
+
+        Tools.print("***********************");
+        G = new RCGraph(3);
+        G.initEdgeValues(0.5, 0.5);
+        G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(0, 1, 3)] = 3;
+        G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(1, 2, 3)] = 3;
+        G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(2, 0, 3)] = 3;
+        Tools.print("Computing Network R: " + Computation.computeNetworkReliability(G));
+
+        G = GraphTools.buildGraphFromFile("graph.txt", null, null);
+        G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(0, 1, 3)] = 3;
+        G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(1, 2, 3)] = 3;
+        G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(2, 0, 3)] = 3;
+        
+        G = new RCGraph(4);
+        ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(0, 1, 4)]).setCost(2);
+        ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(0, 2, 4)]).setCost(5);
+        ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(0, 3, 4)]).setCost(10);
+        ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(1, 2, 4)]).setCost(10);
+        ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(1, 3, 4)]).setCost(1);
+        ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(2, 3, 4)]).setCost(1);
+
+        GraphTools.minimum_cost_spanning_tree(G);
+        Tools.print(G);
+        V = new View(G);
     }
 }

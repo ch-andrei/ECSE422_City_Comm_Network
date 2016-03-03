@@ -22,6 +22,12 @@ public class RCEdge extends Edge {
         this.reliability = 0;
     }
 
+    public RCEdge(RCEdge e){
+        super(e.getV1(), e.getV2());
+        this.cost = e.getCost();
+        this.reliability = e.getReliability();
+    }
+
     public double getCost() {
         return cost;
     }

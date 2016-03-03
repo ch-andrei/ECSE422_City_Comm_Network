@@ -38,8 +38,12 @@ public class RCEdge extends Edge {
         this.reliability = reliability;
     }
 
+    public double r2cRatio(){
+        return this.reliability / this.cost;
+    }
+
     @Override
     public String toString(){
-        return "[" + this.getV1().getTag() + "," + this.getV2().getTag() + "] C = " + this.cost + ", R = " + this.reliability;
+        return "[" + this.getV1().getTag() + "," + this.getV2().getTag() + "] C = " + this.cost + ", R = " + this.reliability +  ", R/C = " + r2cRatio();
     }
 }

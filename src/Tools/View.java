@@ -96,11 +96,11 @@ public class View extends JFrame {
                     int vPosX = pixel_v_pos.get(v2.getTag())[0];
                     int vPosY = pixel_v_pos.get(v2.getTag())[1];
                     g2.drawLine(posX, posY, vPosX, vPosY);
-                    int rX = (posX + vPosX) / 2;
+                    int rX = (posX + vPosX) / 2 + 20;
                     int rY = (posY + vPosY) / 2 + 20;
                     g2.setColor(c);
                     g.setFont(new Font("TimesRoman", Font.PLAIN, 13));
-                    g.drawString("[" + G.getAdjacencyMatrix()[index] + "] R = " +((RCEdge) e).getReliability() + ", C = " +((RCEdge) e).getCost(), rX, rY);
+                    g.drawString("[" + G.getAdjacencyMatrix()[index] + "] R = " + ((RCEdge) e).getReliability() + ", C = " +((RCEdge) e).getCost() + ", R/C = " + ((RCEdge) e).getReliability()/((RCEdge) e).getCost(), rX, rY);
                 }
                 index++;
             }

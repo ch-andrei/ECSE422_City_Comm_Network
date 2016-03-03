@@ -102,8 +102,7 @@ public class Graph {
         for (Edge e : this.getE()) {
             if (e == null)
                 continue;
-            if (adjacencyMatrix[index] != 0)
-                str += e + ";\n";
+            str += "[" + adjacencyMatrix[index] + "/3] " + e + ";\n";
             index++;
         }
         return str;

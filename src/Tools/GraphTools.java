@@ -18,41 +18,6 @@ import java.util.regex.PatternSyntaxException;
  */
 public class GraphTools {
 
-
-    /**
-     * Get a maximum spanning tree from a graph with weighted edges
-     * Kruskal's algorithm
-     */
-    public static void minimum_cost_spanning_tree(RCGraph G) {
-        Queue<Edge> mst = new LinkedList<Edge>();
-        RCGraph copyG = new RCGraph(G);
-        Edge[] edges = (copyG.getE());
-
-        List<Edge> e_list = Arrays.asList(edges);
-        e_list.sort((e1, e2) -> {
-            return (new Double(((RCEdge)e1).getCost()).compareTo(((RCEdge)e2).getCost()));
-        });
-
-        int index = 0;
-        while (!GraphTools.checkConnectedG(copyG) && mst.size() < G.getN() - 1 && index < G.getTotal_entries()) {
-            copyG.getAdjacencyMatrix()[index] = 1;
-            if (GraphTools.findCycleEdge(copyG) != -1){
-                copyG.getAdjacencyMatrix()[index] = 0;
-            } else {
-                mst.add(new Edge(copyG.getE()[index]));
-            }
-            index++;
-        }
-
-        index = 0;
-        for (Edge e : mst){
-            int i = e.getV1().getTag();
-            int j = e.getV2().getTag();
-            int ij = GraphTools.matrixToArrayIndex(i, j, G.getN());
-            G.getAdjacencyMatrix()[ij] = 1;
-        }
-    }
-
     /**
      * convert i,j indexes of an nxn matrix to a single array index.
      * NOTE: Matrix must be symmetrical (Mij = Mji), and must have 0s on the diagonal entries.

@@ -54,7 +54,6 @@ public class TestTools {
         if (ij[0] != 4 && ij[1] != 0)
             Tools.print("Failed index test4.");
 
-
         // CONNECTION TEST
         G = new RCGraph(5);
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(0, 1, 5)] = 1;
@@ -126,17 +125,25 @@ public class TestTools {
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(0, 1, 3)] = 3;
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(1, 2, 3)] = 3;
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(2, 0, 3)] = 3;
-        
+
         G = new RCGraph(4);
         ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(0, 1, 4)]).setCost(2);
         ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(0, 2, 4)]).setCost(5);
         ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(0, 3, 4)]).setCost(10);
         ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(1, 2, 4)]).setCost(10);
-        ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(1, 3, 4)]).setCost(1);
+        ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(1, 3, 4)]).setCost(0);
         ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(2, 3, 4)]).setCost(1);
 
-        GraphTools.minimum_cost_spanning_tree(G);
+        ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(0, 1, 4)]).setReliability(0.2);
+        ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(0, 2, 4)]).setReliability(0);
+        ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(0, 3, 4)]).setReliability(0.8);
+        ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(1, 2, 4)]).setReliability(0.8);
+        ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(1, 3, 4)]).setReliability(0.1);
+        ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(2, 3, 4)]).setReliability(0.05);
+
+        Computation.minimum_cost_spanning_tree(G);
         Tools.print(G);
         V = new View(G);
+        Tools.print("R = " + Computation.computeNetworkReliability(G) + ", C = " + Computation.computeC(G));
     }
 }

@@ -6,10 +6,8 @@ import Graphs.NavigationGraph.NavGraph;
 import Graphs.NetworkGraph.RCEdge;
 import Graphs.NetworkGraph.RCGraph;
 
-import javax.tools.Tool;
-import java.util.Arrays;
+
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.regex.PatternSyntaxException;
 
@@ -150,7 +148,7 @@ public class GraphTools {
      */
     public static boolean checkConnectedG(Graph G) {
         NavGraph nG = new NavGraph(G);
-        Queue<Integer> queue = new LinkedList<Integer>();
+        Queue<Integer> queue = new LinkedList<>();
         nG.getVisited()[0] = true;
         queue.add(0);
         while (!queue.isEmpty()) {

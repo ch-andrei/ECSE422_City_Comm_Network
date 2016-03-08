@@ -49,8 +49,8 @@ public class View extends JFrame {
         this.nodes = Arrays.asList(G.getV());
         for (int i = 0; i < this.nodes.size(); i++) {
             int posX, posY;
-            posX = (scale / 2) + (int) ((scale * 0.45) * Math.sin(i * (2 * 3.141592653) / this.nodes.size()));
-            posY = (scale / 2) + (int) ((scale * 0.45) * Math.cos(i * (2 * 3.141592653) / this.nodes.size()));
+            posX = (scale / 2) + (int) ((scale * 0.4) * Math.sin(i * (2 * 3.141592653) / this.nodes.size()));
+            posY = (scale / 2) + (int) ((scale * 0.4) * Math.cos(i * (2 * 3.141592653) / this.nodes.size()));
             v_pos.add(new Integer[]{posX, posY});
         }
         this.MAX_X = this.MAX_Y = scale;
@@ -84,6 +84,7 @@ public class View extends JFrame {
             }
 
             // draw edges
+
             int index = 0;
             for (Edge e : G.getE()) {
                 if (e != null && G.getAdjacencyMatrix()[index] != 0) {
@@ -96,14 +97,37 @@ public class View extends JFrame {
                     int vPosX = pixel_v_pos.get(v2.getTag())[0];
                     int vPosY = pixel_v_pos.get(v2.getTag())[1];
                     g2.drawLine(posX, posY, vPosX, vPosY);
-                    int rX = (posX + vPosX) / 2 + 20;
-                    int rY = (posY + vPosY) / 2 + 20;
+                    int angle = 90 - (int) Math.toDegrees(Math.atan2((posX - vPosX), (posY - vPosY)));
+                    int distance = (int) (Math.sqrt(Math.pow(posX - vPosX, 2) + Math.pow(posY - vPosY, 2)));
+                    if (angle > 90 && angle < 270) angle -= 180;
+                    int rX, rY;
+                    if (angle > 180) {
+                        rX = (int) vPosX;
+                        rY = (int) vPosY;
+                    } else {
+                        rX = (int) posX;
+                        rY = (int) posY;
+                    }
+
                     g2.setColor(c);
-                    g.setFont(new Font("TimesRoman", Font.PLAIN, 13));
-                    g.drawString("[" + G.getAdjacencyMatrix()[index] + "] R = " + ((RCEdge) e).getReliability() + ", C = " +((RCEdge) e).getCost() + ", R/C = " + ((RCEdge) e).getReliability()/((RCEdge) e).getCost(), rX, rY);
+                    int font = (int) (0.7 * Math.sqrt(distance));
+                    if (font < 7) font = 7;
+                    if (font > 11) font = 11;
+                    g.setFont(new Font("TimesRoman", Font.PLAIN, font));
+//                    Tools.print("view " + G.getE()[index] + "; " + angle);
+                    if (G.getN() < 20)
+                    drawRotate(g2, rX, rY, angle, "" + ((RCEdge) G.getE()[index]));
                 }
                 index++;
             }
+        }
+
+        public void drawRotate(Graphics2D g2d, double x, double y, int angle, String text) {
+            g2d.translate((float) x, (float) y);
+            g2d.rotate(Math.toRadians(angle));
+            g2d.drawString(text, 0, 0);
+            g2d.rotate(-Math.toRadians(angle));
+            g2d.translate(-(float) x, -(float) y);
         }
     }
 

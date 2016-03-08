@@ -10,17 +10,17 @@ public class RCGraph extends Graph {
 
     public RCGraph(int n){
         super(n);
-        initEdgeValues();
+        init_edge_values();
     }
 
     public RCGraph(int n, double[] costs, double[] reliabilities){
         super(n);
-        initEdgeValues(costs,reliabilities);
+        init_edge_values(costs,reliabilities);
     }
 
     public RCGraph(Graph G){
         super(G);
-        initEdgeValues();
+        init_edge_values();
     }
 
     /**
@@ -29,10 +29,10 @@ public class RCGraph extends Graph {
      */
     public RCGraph(RCGraph G){
         super(G);
-        initEdgeValues(G);
+        init_edge_values(G);
     }
 
-    private void initEdgeValues(){
+    public void init_edge_values(){
         int index = 0;
         for (int j = 0; j < this.getN(); j++){
             for (int i = j+1; i < this.getN(); i++){
@@ -41,7 +41,9 @@ public class RCGraph extends Graph {
             }
         }
     }
-    private void initEdgeValues(RCGraph G){
+
+    @Override
+    public void init_edge_values(Graph G){
         int index = 0;
         for (int j = 0; j < this.getN(); j++){
             for (int i = j+1; i < this.getN(); i++){
@@ -51,7 +53,7 @@ public class RCGraph extends Graph {
         }
     }
 
-    private void initEdgeValues(double[] costs, double[] reliabilities){
+    public void init_edge_values(double[] costs, double[] reliabilities){
         int index = 0;
         for (int j = 0; j < this.getN(); j++){
             for (int i = j+1; i < this.getN(); i++){
@@ -61,7 +63,7 @@ public class RCGraph extends Graph {
         }
     }
 
-    public void initEdgeValues(double cost, double reliability){
+    public void init_edge_values(double cost, double reliability){
         int index = 0;
         for (int j = 0; j < this.getN(); j++){
             for (int i = j+1; i < this.getN(); i++){

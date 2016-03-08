@@ -31,4 +31,8 @@ public class Tools {
         }
         return str;
     }
+
+    public static String smaller_double(double d){
+        return String.format("%.2f", (float)d);
+    }
 }

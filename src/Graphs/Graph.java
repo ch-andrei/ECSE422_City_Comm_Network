@@ -27,15 +27,19 @@ public class Graph {
     public Graph(Graph G) {
         this.n = G.getN();
         this.total_entries = G.getTotal_entries();
+        this.V = Arrays.copyOf(G.getV(), G.getV().length);
+        this.adjacencyMatrix = Arrays.copyOf(G.getAdjacencyMatrix(), G.getAdjacencyMatrix().length);
         this.E = new Edge[total_entries];
+        init_edge_values(G);
+    }
+
+    public void init_edge_values(Graph G){
         for (int i = 0 ; i < total_entries; i++){
             this.E[i] = new Edge(G.getE()[i].getV1(), G.getE()[i].getV2());
         }
-        this.V = Arrays.copyOf(G.getV(), G.getV().length);
-        this.adjacencyMatrix = Arrays.copyOf(G.getAdjacencyMatrix(), G.getAdjacencyMatrix().length);
     }
 
-    private void init() {
+    public void init() {
         for (int tag = 0; tag < n; tag++) {
             V[tag] = new Vertex(tag);
         }

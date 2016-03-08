@@ -2,6 +2,7 @@ package Graphs.NetworkGraph;
 
 import Graphs.Edge;
 import Graphs.Vertex;
+import Tools.Tools;
 
 /**
  * Created by Andrei-ch on 2016-02-29.
@@ -50,6 +51,7 @@ public class RCEdge extends Edge {
 
     @Override
     public String toString(){
-        return "[" + this.getV1().getTag() + "," + this.getV2().getTag() + "] C = " + this.cost + ", R = " + this.reliability +  ", R/C = " + r2cRatio();
+        return "[" + this.getV1().getTag() + "," + this.getV2().getTag() + "] C = " + Tools.smaller_double(this.cost) + ", R = " +
+                Tools.smaller_double(this.reliability) +  ", R/C = " + Tools.smaller_double(r2cRatio());
     }
 }

@@ -3,8 +3,7 @@ package CommunicationNetwork;
 import Graphs.Edge;
 import Graphs.NetworkGraph.RCEdge;
 import Graphs.NetworkGraph.RCGraph;
-import Tools.GraphTools;
-import Tools.Tools;
+import Toolset.GraphTools;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,7 +55,6 @@ public class Computation {
                     incremental_R = computeNetworkReliability(copyG);
             } else
                 incremental_R = computeNetworkReliability(copyG);
-//            Tools.print("added edge " + (RCEdge)copyG.getE()[ij] + "; Incremental R = " + incremental_R);
         }
 
         if (incremental_R > r)
@@ -97,7 +95,6 @@ public class Computation {
                     incremental_R = computeNetworkReliability(copyG);
             } else
                 incremental_R = computeNetworkReliability(copyG);
-//            Tools.print("added edge " + (RCEdge)copyG.getE()[ij] + "; Incremental R = " + incremental_R);
         }
 
         if (incremental_R > r)
@@ -137,7 +134,6 @@ public class Computation {
                     incremental_R = computeNetworkReliability(copyG);
             } else
                 incremental_R = computeNetworkReliability(copyG);
-//            Tools.print("added edge " + (RCEdge)copyG.getE()[ij] + "; Incremental R = " + incremental_R);
         }
 
         if (incremental_R > r)
@@ -153,9 +149,7 @@ public class Computation {
 
         double incremental_C = 0;
         int index = 0;
-        boolean fast = false;
-        while ((fast || incremental_C < c) && index < copyG.getTotal_entries()) {
-            fast = false;
+        while ((incremental_C < c) && index < copyG.getTotal_entries()) {
             int i, j, ij;
             i = e_list.get(index).getV1().getTag();
             j = e_list.get(index).getV2().getTag();
@@ -167,12 +161,12 @@ public class Computation {
             if (copyG.getAdjacencyMatrix()[ij] < 3) {
                 copyG.getAdjacencyMatrix()[ij] += 1;
             } else {
-                fast = true;
                 index++;
             }
 
             incremental_C = computeCost(copyG);
-//            Tools.print("added edge " + (RCEdge)copyG.getE()[ij] + "; Incremental R = " + incremental_R);
+            if (incremental_C > c)
+                copyG.getAdjacencyMatrix()[ij] -= 1;
         }
 
         if (incremental_C > c)

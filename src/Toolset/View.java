@@ -1,4 +1,4 @@
-package Tools;
+package Toolset;
 
 import Graphs.Edge;
 import Graphs.Graph;
@@ -34,7 +34,8 @@ public class View extends JFrame {
     private int scale = 1024;
     private int pointSize = 15;
 
-    final private Color c = new Color(255, 0, 35, 254);
+    final private Color red = Color.red;
+    final private Color black = Color.BLACK;
 
     public View(Graph G) {
         super("Reliability Graph");
@@ -72,22 +73,24 @@ public class View extends JFrame {
             double scale_y = (double) (h - 2 * PAD) / MAX_Y;
 
             // draw vertices
-            g2.setColor(c);
+
             for (int i = 0; i < nodes.size(); i++) {
                 Vertex node = nodes.get(i);
                 int posX = PAD + (int) (v_pos.get(i)[0] * scale_x);
                 int posY = h - PAD - (int) (v_pos.get(i)[1] * scale_y);
                 pixel_v_pos.add(new Integer[]{posX, posY});
+                g2.setColor(red);
                 g2.fill(new Ellipse2D.Double(posX - pointSize / 2, posY - pointSize / 2, pointSize, pointSize));
-                g.setFont(new Font("TimesRoman", Font.PLAIN, 11));
-                g.drawString("" + node, posX + 10, posY + 10);
+                g2.setColor(black);
+                g.setFont(new Font("TimesRoman", Font.PLAIN, 10));
+                g.drawString("" + node, posX - 8, posY+2);
             }
 
             // draw edges
-
             int index = 0;
             for (Edge e : G.getE()) {
-                if (e != null && G.getAdjacencyMatrix()[index] != 0) {
+                int adj = G.getAdjacencyMatrix()[index];
+                if (e != null && adj != 0) {
                     g2.setColor(new Color(30, 30, 30, 100));
                     Vertex v1, v2;
                     v1 = e.getV1();
@@ -99,7 +102,8 @@ public class View extends JFrame {
                     g2.drawLine(posX, posY, vPosX, vPosY);
                     int angle = 90 - (int) Math.toDegrees(Math.atan2((posX - vPosX), (posY - vPosY)));
                     int distance = (int) (Math.sqrt(Math.pow(posX - vPosX, 2) + Math.pow(posY - vPosY, 2)));
-                    if (angle > 90 && angle < 270) angle -= 180;
+                    if (angle >= 90 && angle <= 270)
+                        angle -= 180;
                     int rX, rY;
                     if (angle > 180) {
                         rX = (int) vPosX;
@@ -109,14 +113,13 @@ public class View extends JFrame {
                         rY = (int) posY;
                     }
 
-                    g2.setColor(c);
+                    g2.setColor(red);
                     int font = (int) (0.7 * Math.sqrt(distance));
                     if (font < 7) font = 7;
                     if (font > 11) font = 11;
                     g.setFont(new Font("TimesRoman", Font.PLAIN, font));
-//                    Tools.print("view " + G.getE()[index] + "; " + angle);
                     if (G.getN() < 20)
-                    drawRotate(g2, rX, rY, angle, "" + ((RCEdge) G.getE()[index]));
+                    drawRotate(g2, rX, rY, angle, "[" + adj + "] " + ((RCEdge) G.getE()[index]));
                 }
                 index++;
             }
@@ -125,7 +128,7 @@ public class View extends JFrame {
         public void drawRotate(Graphics2D g2d, double x, double y, int angle, String text) {
             g2d.translate((float) x, (float) y);
             g2d.rotate(Math.toRadians(angle));
-            g2d.drawString(text, 0, 0);
+            g2d.drawString(text, 15 , 0);
             g2d.rotate(-Math.toRadians(angle));
             g2d.translate(-(float) x, -(float) y);
         }

@@ -16,6 +16,6 @@ public class Vertex {
     }
 
     public String toString(){
-        return "tag " + tag;
+        return "T" + tag;
     }
 }

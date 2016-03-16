@@ -1,6 +1,5 @@
-package Tools;
+package Toolset;
 
-import Graphs.Edge;
 import Graphs.Graph;
 import Graphs.NavigationGraph.NavGraph;
 import Graphs.NetworkGraph.RCEdge;
@@ -9,7 +8,6 @@ import Graphs.NetworkGraph.RCGraph;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * Created by Andrei-ch on 2016-02-28.
@@ -171,37 +169,13 @@ public class GraphTools {
         return true;
     }
 
-    public static RCGraph buildGraphFromFile(String filename, Integer[] a_b, double[] RC) {
-        String constraints = Tools.readConstrains("./resources/" + filename);
-        if (constraints.isEmpty())
-            return null;
-
-        String[] vals = null;
-        try {
-            vals = constraints.split("\\s+");
-        } catch (PatternSyntaxException ex) {
-            ex.printStackTrace();
-        }
-
-        double[] d_vals = null;
-        if (vals != null) {
-            d_vals = new double[vals.length];
-            for (int i = 0; i < vals.length; i++) {
-                d_vals[i] = Double.parseDouble(vals[i]);
-            }
-        }
-
-        int index = (int) (d_vals[0] + (d_vals[0] * (d_vals[0] - 1) / 2));
-        if (a_b != null)
-            a_b[0] = Integer.parseInt(vals[index]);
-        if (RC != null) {
-            RC[0] = Integer.parseInt(vals[index + 1]);
-            RC[1] = Integer.parseInt(vals[index + 2]);
-        }
-        return buildRCGraphFromString(d_vals);
-    }
-
-    private static RCGraph buildRCGraphFromString(double[] d_vals) {
+    /**
+     * build a new RCGraph from an input array of doubles of the form:
+     * N, N(N-1)/2 C entries, N(N-1)/2 R entries
+     * @param d_vals
+     * @return
+     */
+    public static RCGraph buildRCGraphFromDoubleArray(double[] d_vals) {
         // split constraints
         if (d_vals == null)
             return null;
@@ -226,6 +200,50 @@ public class GraphTools {
         }
 
         return new RCGraph(N, costs, reliabilities);
+    }
+
+    public static void printPrettyAdjMatrix(Graph G){
+        Tools.print("Printing Adjacency Matrix:");
+        for (int i = G.getN() - 1 ; i >= 0; i--){
+            for (int j = 0; j < G.getN(); j++){
+                if (i >= j) continue;
+                int ij = matrixToArrayIndex(i,j,G.getN());
+                String str = "" + G.getAdjacencyMatrix()[ij];
+                System.out.print(str);
+            }
+            Tools.print("");
+        }
+    }
+
+    public static void printPrettyAdjMatrix1(Graph G){
+        int i = 0;
+        int padding = G.getN() / 10 + 3;
+
+        while (i < G.getN()){
+            String str = "" + i;
+            int diff = padding - str.length();
+            System.out.print(repeat(" ", diff) + str);
+            i++;
+        }
+
+        Tools.print("");
+
+        for (i = G.getN() - 1 ; i >= 0; i--){
+            String str = "" + i;
+            int diff = padding - str.length();
+            System.out.print(str + repeat(" ", diff));
+            for (int j = 0; j < G.getN(); j++){
+                if (i >= j) continue;
+                int ij = matrixToArrayIndex(i,j,G.getN());
+                str = G.getAdjacencyMatrix()[ij] + repeat(" ", padding - 1);
+                System.out.print(str);
+            }
+            Tools.print("");
+        }
+    }
+
+    private static String repeat(String str, int count) {
+        return count > 0 ?  repeat(str, count -1) + str: "";
     }
 
     public static double rSeries(double r1, double r2) {

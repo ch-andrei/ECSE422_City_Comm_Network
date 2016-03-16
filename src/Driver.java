@@ -1,35 +1,48 @@
-import Graphs.Graph;
-import Tools.TestTools;
+import CommunicationNetwork.Computation;
+import Graphs.NetworkGraph.RCGraph;
+import Toolset.GraphTools;
+import Toolset.TestTools;
+import Toolset.Tools;
+import Toolset.View;
 
 /**
  * Created by Andrei-ch on 2016-02-27.
  */
 public class Driver {
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
-        boolean debug = true;
+        boolean debug = false;
         if (debug) {
             TestTools.test();
         }
 
         // Todo get and check inputs from args
 
-        boolean a_b = false;
+        int[] a_b = new int[1];
+        double[] desired_R_C = new double[2];
+        Computation C;
+        RCGraph G;
+        View V;
 
-        Graph graph;
-        if (a_b) {
-            // Reliability constraint
+        G = Toolset.Tools.buildGraphFromFile("prj1_input.txt", a_b, desired_R_C);
+        C = new Computation();
 
+
+        Tools.print("Desired configuration: ");
+        Tools.print("Mode: " + a_b[0] + ";\nIf Mode 0, desired Reliability = " + desired_R_C[0] + ";\nIf Mode 1, desired Cost = " + desired_R_C[1]);
+
+        if (a_b[0] == 0){
+            G = C.minimalCost_ReliabilityConstraint(G , desired_R_C[0]);
         } else {
-            // Cost constraint
-
+            G = C.maximumReliability_CostConstraint(G , desired_R_C[1]);
         }
 
-        //print(graph);
+        Tools.print("");
+        GraphTools.printPrettyAdjMatrix(G);
+
+        Tools.print("\nComputed Result: R = " + C.computeNetworkReliability(G) + ", C = " + C.computeCost(G));
+        V = new View(G);
     }
-
-
-
 
 
 }

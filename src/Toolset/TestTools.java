@@ -1,6 +1,5 @@
-package Tools;
+package Toolset;
 
-import CommunicationNetwork.ComputeUnit;
 import Graphs.Graph;
 import Graphs.NetworkGraph.RCEdge;
 import Graphs.NetworkGraph.RCGraph;
@@ -18,6 +17,7 @@ public class TestTools {
 
     public static void test() {
         View V;
+        Computation C = new Computation();
 
         // G5 TEST
         String g5 = "Vertices:\n" +
@@ -87,7 +87,7 @@ public class TestTools {
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(1, 2, 4)] = 1;
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(2, 3, 4)] = 1;
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(0, 2, 4)] = 1;
-//        Tools.print("Computing Network R: " + Computation.computeNetworkReliability(G));
+//        Toolset.print("Computing Network R: " + Computation.computeNetworkReliability(G));
 
         Tools.print("***********************");
         G = new RCGraph(4);
@@ -95,7 +95,7 @@ public class TestTools {
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(0, 1, 4)] = 1;
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(1, 2, 4)] = 1;
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(2, 3, 4)] = 1;
-//        Tools.print("Computing Network R: " + Computation.computeNetworkReliability(G));
+//        Toolset.print("Computing Network R: " + Computation.computeNetworkReliability(G));
 
         Tools.print("***********************");
         G = new RCGraph(4);
@@ -103,7 +103,7 @@ public class TestTools {
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(3, 0, 4)] = 1;
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(3, 1, 4)] = 1;
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(3, 2, 4)] = 1;
-//        Tools.print("Computing Network R: " + Computation.computeNetworkReliability(G));
+//        Toolset.print("Computing Network R: " + Computation.computeNetworkReliability(G));
 
         Tools.print("***********************");
         G = new RCGraph(6);
@@ -114,7 +114,7 @@ public class TestTools {
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(3, 1, 6)] = 1;
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(2, 3, 6)] = 1;
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(4, 5, 6)] = 1;
-//        Tools.print("Computing Network R: " + Computation.computeNetworkReliability(G));
+//        Toolset.print("Computing Network R: " + Computation.computeNetworkReliability(G));
 
         Tools.print("***********************");
         G = new RCGraph(3);
@@ -122,9 +122,9 @@ public class TestTools {
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(0, 1, 3)] = 3;
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(1, 2, 3)] = 3;
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(2, 0, 3)] = 3;
-//        Tools.print("Computing Network R: " + Computation.computeNetworkReliability(G));
+//        Toolset.print("Computing Network R: " + Computation.computeNetworkReliability(G));
 
-        G = GraphTools.buildGraphFromFile("graph.txt", null, null);
+        G = Tools.buildGraphFromFile("graph.txt", null, null);
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(0, 1, 3)] = 3;
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(1, 2, 3)] = 3;
         G.getAdjacencyMatrix()[GraphTools.matrixToArrayIndex(2, 0, 3)] = 3;
@@ -146,7 +146,7 @@ public class TestTools {
         ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(2, 3, 4)]).setReliability(0.05);
 
 //        G = Computation.minimalCost_ReliabilityConstraint1(G, 0.3);
-//        Tools.print("R = " + Computation.computeNetworkReliability(G) + ", C = " + Computation.computeCost(G) + "\n" + G);
+//        Toolset.print("R = " + Computation.computeNetworkReliability(G) + ", C = " + Computation.computeCost(G) + "\n" + G);
 
         Integer[] winR = new Integer[3], winC = new Integer[3];
         winR[0] = new Integer(0);
@@ -158,7 +158,7 @@ public class TestTools {
         winC[2] = new Integer(0);
 
         long time = System.currentTimeMillis(), time1, time2 = time;
-        int tests = 500, total = tests;
+        int tests = 0, total = tests;
         while (tests > 0) {
             n = 20;
             G = new RCGraph(n);
@@ -176,22 +176,22 @@ public class TestTools {
 
             d1 = d2 = d3 = false;
 
-            Computation Comput = new Computation();
-            G = Comput.minimalCost_ReliabilityConstraint(G, 0.8);
-            GG = Comput.minimalCost_ReliabilityConstraint1(GG, 0.8);
-            GGG = Comput.minimalCost_ReliabilityConstraint2(GGG, 0.8);
+
+            G = C.minimalCost_ReliabilityConstraint(G, 0.8);
+            GG = C.minimalCost_ReliabilityConstraint1(GG, 0.8);
+            GGG = C.minimalCost_ReliabilityConstraint2(GGG, 0.8);
 
             time1 = System.currentTimeMillis();
 
             Tools.print("iteration " + (total - tests) + "; time = " + (time1 - time2) + ", total " + (time1-time));
 
             double c1, c2, c3, r1, r2, r3;
-            r1 = Comput.computeNetworkReliability(G);
-            r2 = Comput.computeNetworkReliability(GG);
-            r3 = Comput.computeNetworkReliability(GGG);
-            c1 = Comput.computeCost(G);
-            c2 = Comput.computeCost(GG);
-            c3 = Comput.computeCost(GGG);
+            r1 = C.computeNetworkReliability(G);
+            r2 = C.computeNetworkReliability(GG);
+            r3 = C.computeNetworkReliability(GGG);
+            c1 = C.computeCost(G);
+            c2 = C.computeCost(GG);
+            c3 = C.computeCost(GGG);
 
             List<Double> r = new ArrayList<>();
             r.add(r1);
@@ -227,19 +227,22 @@ public class TestTools {
             time2 = time1;
         }
 
-        Tools.print("WINR " + Arrays.asList(winR));
-        Tools.print("WINC " + Arrays.asList(winC));
+//        Toolset.print("WINR " + Arrays.asList(winR));
+//        Toolset.print("WINC " + Arrays.asList(winC));
 
-
+        G = Tools.buildGraphFromFile("Prj1_input.txt", null, null);
+        G = C.maximumReliability_CostConstraint(G, 220);
+        Tools.print("MIN COST: R = " + C.computeNetworkReliability(G) + ", C = " + C.computeCost(G));
+        V = new View(G);
 //
 //        G = Computation.minimalCost_ReliabilityConstraint(G, 0.5);
-//        Tools.print("MIN COST: R = " + Computation.computeNetworkReliability(G) + ", C = " + Computation.computeCost(G));
+//        Toolset.print("MIN COST: R = " + Computation.computeNetworkReliability(G) + ", C = " + Computation.computeCost(G));
 //
 //        GG = Computation.minimalCost_ReliabilityConstraint1(GG, 0.5);
-//        Tools.print("MAX R2Cr: R = " + Computation.computeNetworkReliability(GG) + ", C = " + Computation.computeCost(GG));
+//        Toolset.print("MAX R2Cr: R = " + Computation.computeNetworkReliability(GG) + ", C = " + Computation.computeCost(GG));
 //
 //        GGG = Computation.minimalCost_ReliabilityConstraint2(GGG, 0.5);
-//        Tools.print("minC+R2C: R = " + Computation.computeNetworkReliability(GGG) + ", C = " + Computation.computeCost(GGG));
+//        Toolset.print("minC+R2C: R = " + Computation.computeNetworkReliability(GGG) + ", C = " + Computation.computeCost(GGG));
 //        View v2 = new View(GG);
     }
 }

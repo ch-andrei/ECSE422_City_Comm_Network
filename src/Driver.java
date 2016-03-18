@@ -16,8 +16,6 @@ public class Driver {
             TestTools.test();
         }
 
-        // Todo get and check inputs from args
-
         int[] a_b = new int[1];
         double[] desired_R_C = new double[2];
         Computation C;
@@ -26,7 +24,6 @@ public class Driver {
 
         G = Toolset.Tools.buildGraphFromFile("prj1_input.txt", a_b, desired_R_C);
         C = new Computation();
-
 
         Tools.print("Desired configuration: ");
         Tools.print("Mode: " + a_b[0] + ";\nIf Mode 0, desired Reliability = " + desired_R_C[0] + ";\nIf Mode 1, desired Cost = " + desired_R_C[1]);
@@ -43,6 +40,4 @@ public class Driver {
         Tools.print("\nComputed Result: R = " + C.computeNetworkReliability(G) + ", C = " + C.computeCost(G));
         V = new View(G);
     }
-
-
 }

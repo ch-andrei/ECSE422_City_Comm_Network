@@ -19,18 +19,6 @@ public class TestTools {
         View V;
         Computation C = new Computation();
 
-        // G5 TEST
-        String g5 = "Vertices:\n" +
-                "[0]: tag 0;\n" +
-                "[1]: tag 1;\n" +
-                "[2]: tag 2;\n" +
-                "[3]: tag 3;\n" +
-                "[4]: tag 4;\n" +
-                "\n" +
-                "Edges:\n";
-        if (g5.compareTo((new Graph(5)).toString()) != 0)
-            Tools.print("Failed G5 test.");
-
         // GRAPH COPY TEST
         Graph G1 = new RCGraph(3);
         Graph G2 = new RCGraph(G1);
@@ -158,7 +146,9 @@ public class TestTools {
         winC[2] = new Integer(0);
 
         long time = System.currentTimeMillis(), time1, time2 = time;
-        int tests = 0, total = tests;
+        int tests = 20, total = tests;
+        int cVar = 0;
+        double rVar = 0, avgC = 0, avgR = 0;
         while (tests > 0) {
             n = 20;
             G = new RCGraph(n);
@@ -171,69 +161,90 @@ public class TestTools {
                     ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(ii, jj, G.getN())]).setReliability(0.8 + 0.2 * random.nextDouble());
                 }
             }
-            GG = new RCGraph(G);
-            GGG = new RCGraph(G);
+            G = C.getBestMinC_Rconstraint(G, 0.7);
+            Tools.print("R = " + C.computeNetworkReliability(G) + ", C = " + C.computeCost(G));
+            Tools.print("\n\n\n");
+//            GG = new RCGraph(G);
+//            GGG = new RCGraph(G);
+//
+//            d1 = d2 = d3 = false;
+//
+//
+//            G = C.maximumReliability_CostConstraint(G, 0.7);
+//            GG = C.maximumReliability_CostConstraint1(GG, 0.7);
+//            GGG = C.minimalCost_ReliabilityConstraint2(GGG, 0.7);
+//            Tools.print("R1 = " + C.computeNetworkReliability(G) + ", C = " + C.computeCost(G));
+//            Tools.print("R2 = " + C.computeNetworkReliability(GG) + ", C = " + C.computeCost(GG));
 
-            d1 = d2 = d3 = false;
-
-
-            G = C.minimalCost_ReliabilityConstraint(G, 0.8);
-            GG = C.minimalCost_ReliabilityConstraint1(GG, 0.8);
-            GGG = C.minimalCost_ReliabilityConstraint2(GGG, 0.8);
-
-            time1 = System.currentTimeMillis();
-
-            Tools.print("iteration " + (total - tests) + "; time = " + (time1 - time2) + ", total " + (time1-time));
-
-            double c1, c2, c3, r1, r2, r3;
-            r1 = C.computeNetworkReliability(G);
-            r2 = C.computeNetworkReliability(GG);
-            r3 = C.computeNetworkReliability(GGG);
-            c1 = C.computeCost(G);
-            c2 = C.computeCost(GG);
-            c3 = C.computeCost(GGG);
-
-            List<Double> r = new ArrayList<>();
-            r.add(r1);
-            r.add(r2);
-            r.add(r3);
-            r.sort((v1, v2) -> {
-                return (v1.compareTo(v2));
-            });
-
-            List<Double> c = new ArrayList<>();
-            c.add(c1);
-            c.add(c2);
-            c.add(c3);
-            c.sort((v1, v2) -> {
-                return (v1.compareTo(v2));
-            });
-
-            if (r1 == r.get(2))
-                winR[0]++;
-            if (r2 == r.get(2))
-                winR[1]++;
-            if (r3 == r.get(2))
-                winR[2]++;
-
-            if (c1 == c.get(0))
-                winC[0]++;
-            if (c2 == c.get(0))
-                winC[1]++;
-            if (c3 == c.get(0))
-                winC[2]++;
-
+//            time1 = System.currentTimeMillis();
+//
+//            Tools.print("iteration " + (total - tests) + "; time = " + (time1 - time2) + ", total " + (time1-time));
+//
+//            double c1, c2, c3, r1, r2, r3;
+//            r1 = C.computeNetworkReliability(G);
+//            r2 = C.computeNetworkReliability(GG);
+//            r3 = C.computeNetworkReliability(GGG);
+//            c1 = C.computeCost(G);
+//            c2 = C.computeCost(GG);
+//            c3 = C.computeCost(GGG);
+//
+//            List<Double> r = new ArrayList<>();
+//            r.add(r1);
+//            r.add(r2);
+//            r.add(r3);
+//            r.sort((v1, v2) -> {
+//                return (v1.compareTo(v2));
+//            });
+//
+//            List<Double> c = new ArrayList<>();
+//            c.add(c1);
+//            c.add(c2);
+//            c.add(c3);
+//            c.sort((v1, v2) -> {
+//                return (v1.compareTo(v2));
+//            });
+//
+//            if (r1 == r.get(2))
+//                winR[0]++;
+//            if (r2 == r.get(2))
+//                winR[1]++;
+//            if (r3 == r.get(2))
+//                winR[2]++;
+//
+//            if (c1 == c.get(0))
+//                winC[0]++;
+//            if (c2 == c.get(0))
+//                winC[1]++;
+//            if (c3 == c.get(0))
+//                winC[2]++;
+//
+//            cVar += c.get(2) - c.get(0);
+//            rVar += r.get(2) - r.get(0);
+//            avgC += (c.get(2) + c.get(0))/2;
+//            avgR += (r.get(2) + r.get(0))/2;
+//
             tests--;
-            time2 = time1;
+//            time2 = time1;
         }
 
-//        Toolset.print("WINR " + Arrays.asList(winR));
-//        Toolset.print("WINC " + Arrays.asList(winC));
+        cVar /= (total*1.0);
+        rVar /= (total*1.0);
+        avgC /= (total*1.0);
+        avgR /= (total*1.0);
+//        Tools.print("WINR " + Arrays.asList(winR));
+//        Tools.print("WINC " + Arrays.asList(winC));
+//        Tools.print("RVAR = " + rVar + "; CVAR = " + cVar);
+//        Tools.print("AVGR = " + avgR + "; AVGC= " + avgC);
 
-        G = Tools.buildGraphFromFile("Prj1_input.txt", null, null);
-        G = C.maximumReliability_CostConstraint(G, 220);
-        Tools.print("MIN COST: R = " + C.computeNetworkReliability(G) + ", C = " + C.computeCost(G));
-        V = new View(G);
+        C = new Computation();
+        RCGraph GGGG = Tools.buildGraphFromFile("Prj1_input.txt", null, null);
+
+        Tools.connectFromFile("sangmoon.txt",GGGG);
+        Tools.print("TEST: R = " + C.computeNetworkReliability(GGGG) + ", C = " + C.computeCost(GGGG));
+        //V = new View(GGGG);
+//        GraphTools.printPrettyAdjMatrix(GGGG);
+//        GraphTools.printPrettyAdjList(GGGG);
+
 //
 //        G = Computation.minimalCost_ReliabilityConstraint(G, 0.5);
 //        Toolset.print("MIN COST: R = " + Computation.computeNetworkReliability(G) + ", C = " + Computation.computeCost(G));

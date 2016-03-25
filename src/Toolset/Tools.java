@@ -4,6 +4,7 @@ import Graphs.NetworkGraph.RCGraph;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
@@ -41,6 +42,20 @@ public class Tools {
         return buildGraphFromString(constraints, a_b, R_C);
     }
 
+    public static void connectFromFile(String filename, RCGraph G){
+        String constraints = Tools.readConstrains("./resources/" + filename);
+        String[] vals = null;
+        constraints = constraints.replaceAll("," , "\t");
+        try {
+            vals = constraints.split("\\s+");
+        } catch (PatternSyntaxException ex) {
+            ex.printStackTrace();
+        }
+        for (int i = 0 ; i < vals.length; i++){
+            G.getAdjacencyMatrix()[i] = Integer.valueOf(vals[i]);
+        }
+    }
+
     /**
      * builds a new RCGraph from a string of values
      * @param constraints
@@ -61,9 +76,8 @@ public class Tools {
         }
 
         // build an array of doubles from input substrings
-        List<Double> d_vals = null;
+        List<Double> d_vals = new ArrayList<Double>();
         if (vals != null) {
-            d_vals = new ArrayList<Double>();
             for (int i = 0; i < vals.length; i++) {
                 if (!vals[i].equals("")) {
                     d_vals.add(Double.parseDouble(vals[i]));

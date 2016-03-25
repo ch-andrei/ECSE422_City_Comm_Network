@@ -11,33 +11,33 @@ import Toolset.View;
 public class Driver {
     public static void main(String[] args) {
 
-        boolean debug = false;
+//        boolean debug = false;
+        boolean debug = true;
         if (debug) {
             TestTools.test();
-        }
-
-        int[] a_b = new int[1];
-        double[] desired_R_C = new double[2];
-        Computation C;
-        RCGraph G;
-        View V;
-
-        G = Toolset.Tools.buildGraphFromFile("prj1_input.txt", a_b, desired_R_C);
-        C = new Computation();
-
-        Tools.print("Desired configuration: ");
-        Tools.print("Mode: " + a_b[0] + ";\nIf Mode 0, desired Reliability = " + desired_R_C[0] + ";\nIf Mode 1, desired Cost = " + desired_R_C[1]);
-
-        if (a_b[0] == 0){
-            G = C.minimalCost_ReliabilityConstraint(G , desired_R_C[0]);
         } else {
-            G = C.maximumReliability_CostConstraint(G , desired_R_C[1]);
+            int[] a_b = new int[1];
+            double[] desired_R_C = new double[2];
+            Computation C;
+            RCGraph G;
+            View V;
+
+            G = Toolset.Tools.buildGraphFromFile("prj1_input.txt", a_b, desired_R_C);
+            C = new Computation();
+
+            Tools.print("CONFIGURATION:");
+            Tools.print("Mode: " + a_b[0] + ";\nIf Mode 0, desired Reliability = " + desired_R_C[0] + ";\nIf Mode 1, desired Cost = " + desired_R_C[1]);
+            Tools.print("");
+            Tools.print("COMPUTED RESULTS:");
+            if (a_b[0] == 0) {
+                G = C.getBestMinC_Rconstraint(G, desired_R_C[0]);
+            } else {
+                G = C.maximumReliability_CostConstraint1(G, desired_R_C[1]);
+            }
+
+            Tools.print("\nPicked Best Graph with: R = " + C.computeNetworkReliability(G) + ", C = " + C.computeCost(G));
+            GraphTools.printPrettyAdjList(G);
+//            V = new View(G);
         }
-
-        Tools.print("");
-        GraphTools.printPrettyAdjMatrix(G);
-
-        Tools.print("\nComputed Result: R = " + C.computeNetworkReliability(G) + ", C = " + C.computeCost(G));
-        V = new View(G);
     }
 }

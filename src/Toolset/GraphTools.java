@@ -172,6 +172,7 @@ public class GraphTools {
     /**
      * build a new RCGraph from an input array of doubles of the form:
      * N, N(N-1)/2 C entries, N(N-1)/2 R entries
+     *
      * @param d_vals
      * @return
      */
@@ -190,9 +191,9 @@ public class GraphTools {
         reliabilities = new double[total_entries];
 
         try {
-            for (int i = 1; i < total_entries; i++) {
-                costs[i] = d_vals[i];
-                reliabilities[i] = d_vals[i + total_entries];
+            for (int i = 1; i <= total_entries; i++) {
+                costs[i-1] = d_vals[i];
+                reliabilities[i-1] = d_vals[i + total_entries];
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
@@ -202,48 +203,32 @@ public class GraphTools {
         return new RCGraph(N, costs, reliabilities);
     }
 
-    public static void printPrettyAdjMatrix(Graph G){
+    public static void printPrettyAdjMatrix(Graph G) {
         Tools.print("Printing Adjacency Matrix:");
-        for (int i = G.getN() - 1 ; i >= 0; i--){
-            for (int j = 0; j < G.getN(); j++){
-                if (i >= j) continue;
-                int ij = matrixToArrayIndex(i,j,G.getN());
-                String str = "" + G.getAdjacencyMatrix()[ij];
+        for (int i = 0; i < G.getN(); i++) {
+            for (int j = 0; j < G.getN(); j++) {
+                String str;
+                if (i == j) str = "0";
+                else {
+                    int ij = matrixToArrayIndex(i, j, G.getN());
+                    str = "" + G.getAdjacencyMatrix()[ij];
+                }
                 System.out.print(str);
             }
             Tools.print("");
         }
     }
 
-    public static void printPrettyAdjMatrix1(Graph G){
-        int i = 0;
-        int padding = G.getN() / 10 + 3;
-
-        while (i < G.getN()){
-            String str = "" + i;
-            int diff = padding - str.length();
-            System.out.print(repeat(" ", diff) + str);
-            i++;
+    public static void printPrettyAdjList(Graph G) {
+        Tools.print("Printing Adjacency List:");
+        for (int i = 0; i < G.getTotal_entries(); i++) {
+            System.out.print(G.getAdjacencyMatrix()[i] + ",");
         }
-
         Tools.print("");
-
-        for (i = G.getN() - 1 ; i >= 0; i--){
-            String str = "" + i;
-            int diff = padding - str.length();
-            System.out.print(str + repeat(" ", diff));
-            for (int j = 0; j < G.getN(); j++){
-                if (i >= j) continue;
-                int ij = matrixToArrayIndex(i,j,G.getN());
-                str = G.getAdjacencyMatrix()[ij] + repeat(" ", padding - 1);
-                System.out.print(str);
-            }
-            Tools.print("");
-        }
     }
 
     private static String repeat(String str, int count) {
-        return count > 0 ?  repeat(str, count -1) + str: "";
+        return count > 0 ? repeat(str, count - 1) + str : "";
     }
 
     public static double rSeries(double r1, double r2) {

@@ -4,6 +4,7 @@ import Graphs.Edge;
 import Graphs.NetworkGraph.RCEdge;
 import Graphs.NetworkGraph.RCGraph;
 import Toolset.GraphTools;
+import Toolset.Tools;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,92 +18,11 @@ public class Computation {
     final int MAX_EDGE_CAPACITY = 3;
     private List<Edge> e_list;
 
+    private static int counter = 0;
+
     public Computation() {
         e_list = null;
     }
-
-    public RCGraph minimalCost_ReliabilityConstraint2(RCGraph G, double r) {
-        RCGraph copyG = new RCGraph(G);
-
-        build_minCostSpanningTree(copyG);
-
-        sortEdges(copyG, false);
-
-        double incremental_R = 0;
-        int index = 0;
-        boolean fast = false;
-
-        while ((fast || incremental_R < r) && index < copyG.getTotal_entries()) {
-
-            fast = false;
-            int i, j, ij;
-
-            i = e_list.get(index).getV1().getTag();
-            j = e_list.get(index).getV2().getTag();
-            ij = GraphTools.matrixToArrayIndex(i, j, copyG.getN());
-            if (((RCEdge) copyG.getE()[ij]).getReliability() == 0) {
-                index++;
-                continue;
-            }
-            if (copyG.getAdjacencyMatrix()[ij] < 3) {
-                copyG.getAdjacencyMatrix()[ij] += 1;
-            } else {
-                fast = true;
-                index++;
-            }
-            if (G.getN() > 15 && r > 0.6) {
-                if (index % 5 == 0)
-                    incremental_R = computeNetworkReliability(copyG);
-            } else
-                incremental_R = computeNetworkReliability(copyG);
-        }
-
-        if (incremental_R > r)
-            return copyG;
-        else
-            return G;
-    }
-
-    public RCGraph minimalCost_ReliabilityConstraint1(RCGraph G, double r) {
-        RCGraph copyG = new RCGraph(G);
-
-        build_maxR2CSpanningTree(copyG);
-
-        double incremental_R = 0;
-        int index = 0;
-        boolean fast = false;
-
-        while ((fast || incremental_R < r) && index < copyG.getTotal_entries()) {
-
-            fast = false;
-            int i, j, ij;
-
-            i = e_list.get(index).getV1().getTag();
-            j = e_list.get(index).getV2().getTag();
-            ij = GraphTools.matrixToArrayIndex(i, j, copyG.getN());
-            if (((RCEdge) copyG.getE()[ij]).getReliability() == 0) {
-                index++;
-                continue;
-            }
-            if (copyG.getAdjacencyMatrix()[ij] < 3) {
-                copyG.getAdjacencyMatrix()[ij] += 1;
-            } else {
-                fast = true;
-                index++;
-            }
-            if (G.getN() > 15 && r > 0.6) {
-                if (index % 5 == 0)
-                    incremental_R = computeNetworkReliability(copyG);
-            } else
-                incremental_R = computeNetworkReliability(copyG);
-        }
-
-        if (incremental_R > r)
-            return copyG;
-        else
-            return G;
-    }
-
 
     public RCGraph minimalCost_ReliabilityConstraint(RCGraph G, double r) {
         RCGraph copyG = new RCGraph(G);
@@ -112,7 +32,7 @@ public class Computation {
         double incremental_R = 0;
         int index = 0;
         boolean fast = false;
-        while ((fast || incremental_R < r) && index < copyG.getTotal_entries()) {
+        while ((incremental_R < r) && index < copyG.getTotal_entries()) {
             fast = false;
             int i, j, ij;
             i = e_list.get(index).getV1().getTag();
@@ -125,15 +45,17 @@ public class Computation {
             if (copyG.getAdjacencyMatrix()[ij] < 3) {
                 copyG.getAdjacencyMatrix()[ij] += 1;
             } else {
-                fast = true;
                 index++;
+                continue;
             }
 
-            if (G.getN() > 15 && r > 0.6) {
-                if (index % 5 == 0)
-                    incremental_R = computeNetworkReliability(copyG);
-            } else
-                incremental_R = computeNetworkReliability(copyG);
+//            if (G.getN() > 15 && r > 0.6) {
+//                if (index % 5 == 0)
+//                    incremental_R = computeNetworkReliability(copyG);
+//            } else
+            incremental_R = computeNetworkReliability(copyG);
+
+//            Tools.print(incremental_R);
         }
 
         if (incremental_R > r)
@@ -145,7 +67,7 @@ public class Computation {
     public RCGraph maximumReliability_CostConstraint(RCGraph G, double c) {
         RCGraph copyG = new RCGraph(G);
 
-        build_minCostSpanningTree(copyG);
+        build_maxR2CSpanningTree(copyG);
 
         double incremental_C = 0;
         int index = 0;
@@ -167,12 +89,11 @@ public class Computation {
             incremental_C = computeCost(copyG);
             if (incremental_C > c)
                 copyG.getAdjacencyMatrix()[ij] -= 1;
+
+            Tools.print(computeNetworkReliability(copyG));
         }
 
-        if (incremental_C > c)
-            return copyG;
-        else
-            return G;
+        return copyG;
     }
 
     /**
@@ -200,8 +121,8 @@ public class Computation {
     public double computeCost(RCGraph G) {
         double c = 0;
         for (int i = 0; i < G.getTotal_entries(); i++) {
-            RCEdge e = (RCEdge) G.getE()[i];
             int adj = G.getAdjacencyMatrix()[i];
+            RCEdge e = (RCEdge) G.getE()[i];
             c += adj * e.getCost();
         }
         return c;
@@ -212,6 +133,8 @@ public class Computation {
      * @return
      */
     public double computeNetworkReliability(RCGraph G) {
+//        Tools.print(counter);
+        counter = 0;
         RCGraph copyG = new RCGraph(G);
         simpleReduce(copyG);
         if (!GraphTools.checkConnectedG(copyG))
@@ -273,7 +196,7 @@ public class Computation {
      * @return
      */
     private double computeRbyDecomposition(RCGraph G) {
-        // find an edge that is part of a cycle
+        counter++;
         int ijCycle = GraphTools.findCycleEdge(G);
         // if an edge was found
         if (ijCycle != -1) {
@@ -318,6 +241,249 @@ public class Computation {
                 G.getAdjacencyMatrix()[ij]--;
             }
             e.setReliability(nR);
+        }
+    }
+
+    public RCGraph minimalCost_ReliabilityConstraint2(RCGraph G, double r) {
+        RCGraph copyG = new RCGraph(G);
+
+        build_minCostSpanningTree(copyG);
+
+        sortEdges(copyG, false);
+
+        double incremental_R = 0;
+        int index = 0;
+
+        while ((incremental_R < r) && index < copyG.getTotal_entries()) {
+
+            int i, j, ij;
+
+            i = e_list.get(index).getV1().getTag();
+            j = e_list.get(index).getV2().getTag();
+            ij = GraphTools.matrixToArrayIndex(i, j, copyG.getN());
+            if (((RCEdge) copyG.getE()[ij]).getReliability() == 0) {
+                index++;
+                continue;
+            }
+            if (copyG.getAdjacencyMatrix()[ij] < 3) {
+                copyG.getAdjacencyMatrix()[ij] += 1;
+            } else {
+                index++;
+                continue;
+            }
+//            if (G.getN() > 15 && r > 0.6) {
+//                if (index % 5 == 0)
+//                    incremental_R = computeNetworkReliability(copyG);
+//            } else
+            incremental_R = computeNetworkReliability(copyG);
+        }
+
+        if (incremental_R > r)
+            return copyG;
+        else
+            return G;
+    }
+
+    public RCGraph minimalCost_ReliabilityConstraint1(RCGraph G, double r) {
+        RCGraph copyG = new RCGraph(G);
+
+        build_maxR2CSpanningTree(copyG);
+
+        double incremental_R = 0;
+        int index = 0;
+
+        while ((incremental_R < r) && index < copyG.getTotal_entries()) {
+
+            int i, j, ij;
+
+            i = e_list.get(index).getV1().getTag();
+            j = e_list.get(index).getV2().getTag();
+            ij = GraphTools.matrixToArrayIndex(i, j, copyG.getN());
+            if (((RCEdge) copyG.getE()[ij]).getReliability() == 0) {
+                index++;
+                continue;
+            }
+            if (copyG.getAdjacencyMatrix()[ij] < 3) {
+                copyG.getAdjacencyMatrix()[ij] += 1;
+            } else {
+                index++;
+                continue;
+            }
+//            if (G.getN() > 15 && r > 0.6) {
+//                if (index % 5 == 0)
+//                    incremental_R = computeNetworkReliability(copyG);
+//            } else
+            incremental_R = computeNetworkReliability(copyG);
+        }
+
+        if (incremental_R > r)
+            return copyG;
+        else
+            return G;
+    }
+
+    public RCGraph maximumReliability_CostConstraint1(RCGraph G, double c) {
+        RCGraph copyG = new RCGraph(G);
+
+        build_maxR2CSpanningTree(copyG);
+        double acceptable_r2c = ((RCEdge)e_list.get(e_list.size()/2)).r2cRatio();
+
+        sortEdges(copyG, true);
+        double acceptable_c = ((RCEdge)e_list.get(e_list.size()/2)).getCost();
+
+        int i, j, ij;
+        double incremental_C = 0;
+        int index = 0, mod_index = 0;
+        while ((incremental_C < c) && index < copyG.getTotal_entries() * 3) {
+            mod_index = index % copyG.getTotal_entries();
+            i = e_list.get(mod_index).getV1().getTag();
+            j = e_list.get(mod_index).getV2().getTag();
+            ij = GraphTools.matrixToArrayIndex(i, j, copyG.getN());
+            RCEdge e = ((RCEdge) copyG.getE()[ij]);
+            if ( e.getReliability() == 0) {
+                index++;
+                continue;
+            }
+            if (copyG.getAdjacencyMatrix()[ij] < 3 &&
+                    e.r2cRatio() > acceptable_r2c &&
+                    e.getCost() < acceptable_c) {
+                copyG.getAdjacencyMatrix()[ij] += 1;
+                index++;
+            } else {
+                index++;
+                continue;
+            }
+
+            incremental_C = computeCost(copyG);
+            if (incremental_C > c)
+                copyG.getAdjacencyMatrix()[ij] -= 1;
+        }
+        return copyG;
+    }
+
+    // new
+    public RCGraph minimalCost_ReliabilityConstraint3(RCGraph G, double r) {
+        RCGraph copyG = new RCGraph(G);
+        build_minCostSpanningTree(copyG);
+        double acceptable_c = ((RCEdge)e_list.get(e_list.size()/3)).getCost();
+        sortEdges(copyG, false);
+        double acceptable_r2c = ((RCEdge)e_list.get(e_list.size()/2)).r2cRatio();
+
+        int i, j, ij;
+        double incremental_R = 0;
+        int index = 0, mod_index = 0;
+        while ((incremental_R < r) && index < G.getTotal_entries() * 2) {
+            mod_index = index % copyG.getTotal_entries();
+            i = e_list.get(mod_index).getV1().getTag();
+            j = e_list.get(mod_index).getV2().getTag();
+            ij = GraphTools.matrixToArrayIndex(i, j, copyG.getN());
+            RCEdge e = ((RCEdge) copyG.getE()[ij]);
+            if ( e.getReliability() == 0) {
+                index++;
+                continue;
+            }
+            if (copyG.getAdjacencyMatrix()[ij] < 3 &&
+                    e.r2cRatio() > acceptable_r2c &&
+                    e.getCost() < acceptable_c) {
+                copyG.getAdjacencyMatrix()[ij] += 1;
+                index++;
+            } else {
+                index++;
+                continue;
+            }
+            incremental_R = computeNetworkReliability(copyG);
+        }
+
+        if (incremental_R > r)
+            return copyG;
+        else
+            return G;
+    }
+
+    public RCGraph getBestMinC_Rconstraint(RCGraph G, double r) {
+        RCGraph copyG1, copyG2, copyG3, copyG4;
+        copyG1 = minimalCost_ReliabilityConstraint(G, r);
+        copyG2 = minimalCost_ReliabilityConstraint1(G, r);
+        copyG3 = minimalCost_ReliabilityConstraint2(G, r);
+        copyG4 = minimalCost_ReliabilityConstraint3(G, r);
+        double c1, c2, c3, c4, r1, r2, r3, r4;
+        r1 = computeNetworkReliability(copyG1);
+        r2 = computeNetworkReliability(copyG2);
+        r3 = computeNetworkReliability(copyG3);
+        r4 = computeNetworkReliability(copyG4);
+        c1 = computeCost(copyG1);
+        c2 = computeCost(copyG2);
+        c3 = computeCost(copyG3);
+        c4 = computeCost(copyG4);
+
+        Tools.print("R1=" + r1 + "\nC1=" + c1);
+        Tools.print("R2=" + r2 + "\nC2=" + c2);
+        Tools.print("R3=" + r3 + "\nC3=" + c3);
+        Tools.print("R4=" + r4 + "\nC4=" + c4);
+
+        List<Double> rL = new ArrayList<>();
+        rL.add(r1);
+        rL.add(r2);
+        rL.add(r3);
+        rL.add(r4);
+        rL.sort((v1, v2) -> {
+            return (v1.compareTo(v2));
+        });
+
+        List<Double> cL = new ArrayList<>();
+        cL.add(c1);
+        cL.add(c2);
+        cL.add(c3);
+        cL.add(c4);
+        cL.sort((v1, v2) -> {
+            return (v1.compareTo(v2));
+        });
+
+        double cVar, rVar, avgC, avgR;
+        cVar = cL.get(3) - cL.get(0);
+        rVar = rL.get(3) - rL.get(0);
+        avgC = (cL.get(3) + cL.get(0)) / 2;
+        avgR = (rL.get(3) + rL.get(0)) / 2;
+        Tools.print("RVAR = " + rVar + "; CVAR = " + cVar);
+        Tools.print("AVGR = " + avgR + "; AVGC= " + avgC);
+
+        double[] win = new double[4];
+        for (int i = 0; i < 4; i++) {
+            if (i == 0)
+                win[i] = r1 / c1;
+            else if (i == 1)
+                win[i] = r2 / c2;
+            else if (i == 2)
+                win[i] = r3 / c3;
+            else if (i == 3)
+                win[i] = r4 / c4;
+        }
+
+        double max = 0;
+        int winner = 0;
+        for (int i = 0; i < 4; i++) {
+            if (win[i] > max) {
+                max = win[i];
+                winner = i;
+            }
+        }
+        Tools.print("scores");
+        for (double d : win) {
+            System.out.print(d + ",");
+        }
+        Tools.print("");
+
+        switch (winner) {
+            case 0:
+                return copyG1;
+            case 1:
+                return copyG2;
+            case 2:
+                return copyG3;
+            case 3:
+                return copyG4;
+            default:
+                return copyG1;
         }
     }
 }

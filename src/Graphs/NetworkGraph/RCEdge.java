@@ -11,6 +11,13 @@ public class RCEdge extends Edge {
 
     private double cost, reliability;
 
+    /**
+     * default constructor for a edge with Reliability and Cost values
+     * @param v1
+     * @param v2
+     * @param cost
+     * @param reliability
+     */
     public RCEdge(Vertex v1, Vertex v2, double cost, double reliability){
         super(v1,v2);
         this.cost = cost;

@@ -1,5 +1,6 @@
 package Toolset;
 
+import CommunicationNetwork.Computation;
 import Graphs.Graph;
 import Graphs.NavigationGraph.NavGraph;
 import Graphs.NetworkGraph.RCEdge;
@@ -15,8 +16,8 @@ import java.util.Queue;
 public class GraphTools {
 
     /**
-     * convert i,j indexes of an nxn matrix to a single array index.
-     * NOTE: Matrix must be symmetrical (Mij = Mji), and must have 0s on the diagonal entries.
+     * convert i,j indexes of an nxn matrix to an ij array index (sparse matrix representation of a symmetric graph).
+     * NOTE: Graph matrix must be symmetrical (Mij = Mji), and must have 0s on the diagonal entries.
      *
      * @param j
      * @param i
@@ -39,6 +40,8 @@ public class GraphTools {
     }
 
     /**
+     * converts an ij index (sparse matrix representation of a symmetric graph) to i,j array indices.
+     * NOTE: Graph matrix must be symmetrical (Mij = Mji), and must have 0s on the diagonal entries.
      * @param index
      * @param n
      * @return
@@ -60,17 +63,15 @@ public class GraphTools {
     }
 
     /**
+     * merges a given edge within a graph to its neigbhors.
      * @param G
      * @param edgeIndex
      * @return
      */
     public static void mergeEdge(Graph G, int edgeIndex) {
-        // TODO FINISH
-
         // move edges from v1 to v2 by disconnecting v1, and connecting v2 to neighbors of v1
         int v1 = G.getE()[edgeIndex].getV1().getTag(),
                 v2 = G.getE()[edgeIndex].getV2().getTag();
-
         // merge to v2
         for (int index = 0; index < G.getN(); index++) {
             if (v1 == index)
@@ -82,12 +83,11 @@ public class GraphTools {
                     continue;
                 if (G.getAdjacencyMatrix()[ij2] != 0) {
                     RCEdge e = (RCEdge) G.getE()[ij2];
-                    double newR = rParalel(e.getReliability(), ((RCEdge) G.getE()[edgeIndex]).getReliability());
+                    double newR = Computation.rParalel(e.getReliability(), ((RCEdge) G.getE()[edgeIndex]).getReliability());
                     e.setReliability(newR);
                 }
             }
         }
-
         // disconnect v1
         for (int i = 0; i < G.getN(); i++) {
             if (i == v1)
@@ -98,15 +98,18 @@ public class GraphTools {
     }
 
     /**
+     * Sets adjacency matrix element at index ij to 0 (disconnects the edge)
      * @param G
-     * @param edgeIndex
+     * @param ij
      * @return
      */
-    public static void removeEdge(Graph G, int edgeIndex) {
-        G.getAdjacencyMatrix()[edgeIndex] = 0;
+    public static void removeEdge(Graph G, int ij) {
+        G.getAdjacencyMatrix()[ij] = 0;
     }
 
     /**
+     * uses breadth first traversal on the input graph to find a loop.
+     * the ij index of the edge contained in the first discovered loop is returned.
      * @param G
      * @return
      */
@@ -141,6 +144,7 @@ public class GraphTools {
     }
 
     /**
+     * Runs Breadth first traversal to find if a graph is connected
      * @param G
      * @return
      */
@@ -180,16 +184,12 @@ public class GraphTools {
         // split constraints
         if (d_vals == null)
             return null;
-
         int N, total_entries;
         double[] costs, reliabilities;
-
         N = (int) d_vals[0];
         total_entries = N * (N - 1) / 2;
-
         costs = new double[total_entries];
         reliabilities = new double[total_entries];
-
         try {
             for (int i = 1; i <= total_entries; i++) {
                 costs[i-1] = d_vals[i];
@@ -199,10 +199,13 @@ public class GraphTools {
             e.printStackTrace();
             return null;
         }
-
         return new RCGraph(N, costs, reliabilities);
     }
 
+    /**
+     * prints graph adjacency matrix
+     * @param G
+     */
     public static void printPrettyAdjMatrix(Graph G) {
         Tools.print("Printing Adjacency Matrix:");
         for (int i = 0; i < G.getN(); i++) {
@@ -219,6 +222,10 @@ public class GraphTools {
         }
     }
 
+    /**
+     * prints graph adjacency list
+     * @param G
+     */
     public static void printPrettyAdjList(Graph G) {
         Tools.print("Printing Adjacency List:");
         for (int i = 0; i < G.getTotal_entries(); i++) {
@@ -227,15 +234,4 @@ public class GraphTools {
         Tools.print("");
     }
 
-    private static String repeat(String str, int count) {
-        return count > 0 ? repeat(str, count - 1) + str : "";
-    }
-
-    public static double rSeries(double r1, double r2) {
-        return r1 * r2;
-    }
-
-    public static double rParalel(double r1, double r2) {
-        return r1 + r2 - rSeries(r1, r2);
-    }
 }

@@ -1,7 +1,5 @@
 package Graphs;
 
-import Graphs.NetworkGraph.RCEdge;
-
 import java.util.Arrays;
 
 /**
@@ -15,6 +13,10 @@ public class Graph {
     private Edge[] E;           // size n(n-1)/2
     private int[] adjacencyMatrix;
 
+    /**
+     *
+     * @param n
+     */
     public Graph(int n) {
         this.n = n;
         this.total_entries = n * (n - 1) / 2;

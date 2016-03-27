@@ -20,9 +20,11 @@ import javax.swing.JPanel;
 
 /**
  * @author Andrei C
+ *
  *         code is a modified version of source code for Assignment 5, Winter 2014 Comp 202
  *         original author: Jonathan Trembley, University of McGill, COMP 202
  */
+
 public class View extends JFrame {
     private Graph G;
     private List<Vertex> nodes;

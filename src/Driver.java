@@ -11,17 +11,18 @@ import Toolset.View;
 public class Driver {
     public static void main(String[] args) {
 
-//        boolean debug = false;
-        boolean debug = true;
+        boolean debug = false;
         if (debug) {
             TestTools.test();
         } else {
+            // declare variables
             int[] a_b = new int[1];
             double[] desired_R_C = new double[2];
             Computation C;
             RCGraph G;
             View V;
 
+            // build graph
             G = Toolset.Tools.buildGraphFromFile("prj1_input.txt", a_b, desired_R_C);
             C = new Computation();
 
@@ -29,6 +30,8 @@ public class Driver {
             Tools.print("Mode: " + a_b[0] + ";\nIf Mode 0, desired Reliability = " + desired_R_C[0] + ";\nIf Mode 1, desired Cost = " + desired_R_C[1]);
             Tools.print("");
             Tools.print("COMPUTED RESULTS:");
+
+            // compute results
             if (a_b[0] == 0) {
                 G = C.getBestMinC_Rconstraint(G, desired_R_C[0]);
             } else {
@@ -36,8 +39,9 @@ public class Driver {
             }
 
             Tools.print("\nPicked Best Graph with: R = " + C.computeNetworkReliability(G) + ", C = " + C.computeCost(G));
+
             GraphTools.printPrettyAdjList(G);
-//            V = new View(G);
+            V = new View(G);
         }
     }
 }

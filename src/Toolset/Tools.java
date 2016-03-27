@@ -66,7 +66,6 @@ public class Tools {
     private static RCGraph buildGraphFromString(String constraints, int[] a_b, double[] R_C) {
         if (constraints.isEmpty())
             return null;
-
         // separate input string into substrings
         String[] vals = null;
         try {
@@ -74,7 +73,6 @@ public class Tools {
         } catch (PatternSyntaxException ex) {
             ex.printStackTrace();
         }
-
         // build an array of doubles from input substrings
         List<Double> d_vals = new ArrayList<Double>();
         if (vals != null) {
@@ -84,7 +82,6 @@ public class Tools {
                 }
             }
         }
-
         // set control variables
         int index = d_vals.size() - 1;
         if (a_b != null)
@@ -93,14 +90,12 @@ public class Tools {
             R_C[0] = d_vals.get(index - 1);
             R_C[1] = d_vals.get(index);
         }
-
         double[] d_vals_a = new double[d_vals.size()];
         int i = 0;
         for (Double d: d_vals){
             d_vals_a[i] = d;
             i++;
         }
-
         return GraphTools.buildRCGraphFromDoubleArray(d_vals_a);
     }
 
@@ -127,7 +122,6 @@ public class Tools {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
         str = str.replaceAll("[^.0-9 ]", "\t");
         return str;
     }

@@ -15,6 +15,9 @@ public class TestTools {
     public static volatile boolean d1, d2, d3;
     public static volatile RCGraph G, GG, GGG;
 
+    /**
+     * test until everything works!
+     */
     public static void test() {
         View V;
         Computation C = new Computation();
@@ -133,7 +136,7 @@ public class TestTools {
         ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(1, 3, 4)]).setReliability(0.1);
         ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(2, 3, 4)]).setReliability(0.05);
 
-//        G = Computation.minimalCost_ReliabilityConstraint1(G, 0.3);
+//        G = Computation.minimalCost_ReliabilityConstraint2(G, 0.3);
 //        Toolset.print("R = " + Computation.computeNetworkReliability(G) + ", C = " + Computation.computeCost(G) + "\n" + G);
 
         Integer[] winR = new Integer[3], winC = new Integer[3];
@@ -172,7 +175,7 @@ public class TestTools {
 //
 //            G = C.maximumReliability_CostConstraint(G, 0.7);
 //            GG = C.maximumReliability_CostConstraint1(GG, 0.7);
-//            GGG = C.minimalCost_ReliabilityConstraint2(GGG, 0.7);
+//            GGG = C.minimalCost_ReliabilityConstraint3(GGG, 0.7);
 //            Tools.print("R1 = " + C.computeNetworkReliability(G) + ", C = " + C.computeCost(G));
 //            Tools.print("R2 = " + C.computeNetworkReliability(GG) + ", C = " + C.computeCost(GG));
 
@@ -249,10 +252,10 @@ public class TestTools {
 //        G = Computation.minimalCost_ReliabilityConstraint(G, 0.5);
 //        Toolset.print("MIN COST: R = " + Computation.computeNetworkReliability(G) + ", C = " + Computation.computeCost(G));
 //
-//        GG = Computation.minimalCost_ReliabilityConstraint1(GG, 0.5);
+//        GG = Computation.minimalCost_ReliabilityConstraint2(GG, 0.5);
 //        Toolset.print("MAX R2Cr: R = " + Computation.computeNetworkReliability(GG) + ", C = " + Computation.computeCost(GG));
 //
-//        GGG = Computation.minimalCost_ReliabilityConstraint2(GGG, 0.5);
+//        GGG = Computation.minimalCost_ReliabilityConstraint3(GGG, 0.5);
 //        Toolset.print("minC+R2C: R = " + Computation.computeNetworkReliability(GGG) + ", C = " + Computation.computeCost(GGG));
 //        View v2 = new View(GG);
     }

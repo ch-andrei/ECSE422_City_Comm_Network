@@ -39,8 +39,8 @@ public class View extends JFrame {
     final private Color red = Color.red;
     final private Color black = Color.BLACK;
 
-    public View(Graph G) {
-        super("Reliability Graph");
+    public View(Graph G, int counter) {
+        super("Reliability Graph " + counter);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Map map = new Map();
         add(map);

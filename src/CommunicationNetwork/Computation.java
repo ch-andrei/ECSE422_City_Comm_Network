@@ -5,6 +5,7 @@ import Graphs.NetworkGraph.RCEdge;
 import Graphs.NetworkGraph.RCGraph;
 import Toolset.GraphTools;
 import Toolset.Tools;
+import Toolset.View;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,13 +34,167 @@ public class Computation {
     }
 
     /**
+     * PROBLEM: RELIABILITY CONSTRAINT, FIND MINIMUM COST GRAPH
+     * Use this method to find the best available network graph (the best out of 4 available strategies).
+     * Runs all 4 strategies, and returns the one that scores the best balance between cost and reliability.
+     * Attempts to return a graph with a reliability that is the closest to the requested,
+     * as well as a cost that is the lowest available.
+     * Each of the 4 strategies is evaluated and a score is assigned to each.
+     * See
+     * @param G
+     * @param r
+     * @return
+     */
+    public RCGraph getBestMinC_Rconstraint(RCGraph G, double r) {
+        RCGraph copyG1, copyG2, copyG3, copyG4;
+        copyG1 = minimalCost_ReliabilityConstraint(G, r);
+        copyG2 = minimalCost_ReliabilityConstraint2(G, r);
+        copyG3 = minimalCost_ReliabilityConstraint3(G, r);
+        copyG4 = minimalCost_ReliabilityConstraint4(G, r);
+        double c1, c2, c3, c4, r1, r2, r3, r4;
+        r1 = computeNetworkReliability(copyG1);
+        r2 = computeNetworkReliability(copyG2);
+        r3 = computeNetworkReliability(copyG3);
+        r4 = computeNetworkReliability(copyG4);
+        c1 = computeCost(copyG1);
+        c2 = computeCost(copyG2);
+        c3 = computeCost(copyG3);
+        c4 = computeCost(copyG4);
+        Tools.print("R1=" + r1 + "\nC1=" + c1);
+        Tools.print("R2=" + r2 + "\nC2=" + c2);
+        Tools.print("R3=" + r3 + "\nC3=" + c3);
+        Tools.print("R4=" + r4 + "\nC4=" + c4);
+        List<Double> rL = new ArrayList<>();
+        rL.add(r1);
+        rL.add(r2);
+        rL.add(r3);
+        rL.add(r4);
+        rL.sort((v1, v2) -> {
+            return (v1.compareTo(v2));
+        });
+        List<Double> cL = new ArrayList<>();
+        cL.add(c1);
+        cL.add(c2);
+        cL.add(c3);
+        cL.add(c4);
+        cL.sort((v1, v2) -> {
+            return (v1.compareTo(v2));
+        });
+        double cVar, rVar, avgC, avgR;
+        cVar = cL.get(3) - cL.get(0);
+        rVar = rL.get(3) - rL.get(0);
+        avgC = (cL.get(3) + cL.get(0)) / 2;
+        avgR = (rL.get(3) + rL.get(0)) / 2;
+        Tools.print("RVAR = " + rVar + "; CVAR = " + cVar);
+        Tools.print("AVGR = " + avgR + "; AVGC= " + avgC);
+        double[] win = new double[4];
+        for (int i = 0; i < 4; i++) {
+            if (i == 0)
+                win[i] = r1 / c1;
+            else if (i == 1)
+                win[i] = r2 / c2;
+            else if (i == 2)
+                win[i] = r3 / c3;
+            else if (i == 3)
+                win[i] = r4 / c4;
+        }
+        double max = 0;
+        int winner = 0;
+        for (int i = 0; i < 4; i++) {
+            if (win[i] > max) {
+                max = win[i];
+                winner = i;
+            }
+        }
+        Tools.print("");
+        switch (winner) {
+            case 0:
+                return copyG1;
+            case 1:
+                return copyG2;
+            case 2:
+                return copyG3;
+            case 3:
+                return copyG4;
+            default:
+                return copyG1;
+        }
+    }
+
+    /**
+     * PROBLEM: COST CONSTRAINT, FIND MAXIMUM R GRAPH
+     * Use this method to find the best available network graph (the best out of 4 available strategies).
+     * Runs all 2 strategies, and returns the one that scores the best balance between cost and reliability.
+     * Each of the 2 strategies is evaluated and a score is assigned to each.
+     * See
+     * @param G
+     * @param c
+     * @return
+     */
+    public RCGraph getBestMaxR_Cconstraint(RCGraph G, double c) {
+        RCGraph copyG1, copyG2;
+        copyG1 = maximumReliability_CostConstraint(G, c);
+        copyG2 = maximumReliability_CostConstraint1(G, c);
+        double c1, c2, r1, r2;
+        r1 = computeNetworkReliability(copyG1);
+        r2 = computeNetworkReliability(copyG2);
+        c1 = computeCost(copyG1);
+        c2 = computeCost(copyG2);
+        Tools.print("R1=" + r1 + "\nC1=" + c1);
+        Tools.print("R2=" + r2 + "\nC2=" + c2);
+        List<Double> rL = new ArrayList<>();
+        rL.add(r1);
+        rL.add(r2);
+        rL.sort((v1, v2) -> {
+            return (v1.compareTo(v2));
+        });
+        List<Double> cL = new ArrayList<>();
+        cL.add(c1);
+        cL.add(c2);
+        cL.sort((v1, v2) -> {
+            return (v1.compareTo(v2));
+        });
+        double cVar, rVar, avgC, avgR;
+        cVar = cL.get(1) - cL.get(0);
+        rVar = rL.get(1) - rL.get(0);
+        avgC = (cL.get(1) + cL.get(0)) / 2;
+        avgR = (rL.get(1) + rL.get(0)) / 2;
+        Tools.print("RVAR = " + rVar + "; CVAR = " + cVar);
+        Tools.print("AVGR = " + avgR + "; AVGC= " + avgC);
+        double[] win = new double[2];
+        for (int i = 0; i < 2; i++) {
+            if (i == 0)
+                win[i] = r1 / c1;
+            else if (i == 1)
+                win[i] = r2 / c2;
+        }
+        double max = 0;
+        int winner = 0;
+        for (int i = 0; i < 2; i++) {
+            if (win[i] > max) {
+                max = win[i];
+                winner = i;
+            }
+        }
+        Tools.print("");
+        switch (winner) {
+            case 0:
+                return copyG1;
+            case 1:
+                return copyG2;
+            default:
+                return copyG1;
+        }
+    }
+
+    /**
      * Network generation Strategy 1.
      * sorts edges based on cost (minimal cost edges are added first)
      * @param G
      * @param r
      * @return
      */
-    public RCGraph minimalCost_ReliabilityConstraint(RCGraph G, double r) {
+    private RCGraph minimalCost_ReliabilityConstraint(RCGraph G, double r) {
         RCGraph copyG = new RCGraph(G);
         build_minCostSpanningTree(copyG);
         return minimalCost_ReliabilityConstraint(G, copyG, r);
@@ -52,7 +207,7 @@ public class Computation {
      * @param r
      * @return
      */
-    public RCGraph minimalCost_ReliabilityConstraint2(RCGraph G, double r) {
+    private RCGraph minimalCost_ReliabilityConstraint2(RCGraph G, double r) {
         RCGraph copyG = new RCGraph(G);
         build_maxR2CSpanningTree(copyG);
         return minimalCost_ReliabilityConstraint(G, copyG, r);
@@ -66,7 +221,7 @@ public class Computation {
      * @param r
      * @return
      */
-    public RCGraph minimalCost_ReliabilityConstraint3(RCGraph G, double r) {
+    private RCGraph minimalCost_ReliabilityConstraint3(RCGraph G, double r) {
         RCGraph copyG = new RCGraph(G);
         build_minCostSpanningTree(copyG);
         sortEdges(copyG, false);
@@ -83,7 +238,7 @@ public class Computation {
      * @param r
      * @return
      */
-    public RCGraph minimalCost_ReliabilityConstraint(RCGraph G, RCGraph copyG, double r) {
+    private RCGraph minimalCost_ReliabilityConstraint(RCGraph G, RCGraph copyG, double r) {
         double incremental_R = 0;
         int index = 0;
         while ((incremental_R < r) && index < copyG.getTotal_entries()) {
@@ -121,7 +276,7 @@ public class Computation {
      * @param r
      * @return
      */
-    public RCGraph minimalCost_ReliabilityConstraint4(RCGraph G, double r) {
+    private RCGraph minimalCost_ReliabilityConstraint4(RCGraph G, double r) {
         RCGraph copyG = new RCGraph(G);
         build_minCostSpanningTree(copyG);
         double acceptable_c = ((RCEdge)sorted_edges.get(sorted_edges.size()/3)).getCost();
@@ -158,108 +313,12 @@ public class Computation {
     }
 
     /**
-     * PROBLEM: RELIABILITY CONSTRAINT, FIND MINIMUM COST GRAPH
-     * Use this method to find the best available network graph (the best out of 4 available strategies).
-     * Runs all 4 strategies, and returns the one that scores the best balance between cost and reliability.
-     * Attempts to return a graph with a reliability that is the closest to the requested,
-     * as well as a cost that is the lowest available.
-     * Each of the 4 strategies is evaluated and a score is assigned to each.
-     * See
-     * @param G
-     * @param r
-     * @return
-     */
-    public RCGraph getBestMinC_Rconstraint(RCGraph G, double r) {
-        RCGraph copyG1, copyG2, copyG3, copyG4;
-        copyG1 = minimalCost_ReliabilityConstraint(G, r);
-        copyG2 = minimalCost_ReliabilityConstraint2(G, r);
-        copyG3 = minimalCost_ReliabilityConstraint3(G, r);
-        copyG4 = minimalCost_ReliabilityConstraint4(G, r);
-        double c1, c2, c3, c4, r1, r2, r3, r4;
-        r1 = computeNetworkReliability(copyG1);
-        r2 = computeNetworkReliability(copyG2);
-        r3 = computeNetworkReliability(copyG3);
-        r4 = computeNetworkReliability(copyG4);
-        c1 = computeCost(copyG1);
-        c2 = computeCost(copyG2);
-        c3 = computeCost(copyG3);
-        c4 = computeCost(copyG4);
-
-        Tools.print("R1=" + r1 + "\nC1=" + c1);
-        Tools.print("R2=" + r2 + "\nC2=" + c2);
-        Tools.print("R3=" + r3 + "\nC3=" + c3);
-        Tools.print("R4=" + r4 + "\nC4=" + c4);
-
-        List<Double> rL = new ArrayList<>();
-        rL.add(r1);
-        rL.add(r2);
-        rL.add(r3);
-        rL.add(r4);
-        rL.sort((v1, v2) -> {
-            return (v1.compareTo(v2));
-        });
-
-        List<Double> cL = new ArrayList<>();
-        cL.add(c1);
-        cL.add(c2);
-        cL.add(c3);
-        cL.add(c4);
-        cL.sort((v1, v2) -> {
-            return (v1.compareTo(v2));
-        });
-
-        double cVar, rVar, avgC, avgR;
-        cVar = cL.get(3) - cL.get(0);
-        rVar = rL.get(3) - rL.get(0);
-        avgC = (cL.get(3) + cL.get(0)) / 2;
-        avgR = (rL.get(3) + rL.get(0)) / 2;
-        Tools.print("RVAR = " + rVar + "; CVAR = " + cVar);
-        Tools.print("AVGR = " + avgR + "; AVGC= " + avgC);
-        double[] win = new double[4];
-        for (int i = 0; i < 4; i++) {
-            if (i == 0)
-                win[i] = r1 / c1;
-            else if (i == 1)
-                win[i] = r2 / c2;
-            else if (i == 2)
-                win[i] = r3 / c3;
-            else if (i == 3)
-                win[i] = r4 / c4;
-        }
-        double max = 0;
-        int winner = 0;
-        for (int i = 0; i < 4; i++) {
-            if (win[i] > max) {
-                max = win[i];
-                winner = i;
-            }
-        }
-        Tools.print("scores");
-        for (double d : win) {
-            System.out.print(d + ",");
-        }
-        Tools.print("");
-        switch (winner) {
-            case 0:
-                return copyG1;
-            case 1:
-                return copyG2;
-            case 2:
-                return copyG3;
-            case 3:
-                return copyG4;
-            default:
-                return copyG1;
-        }
-    }
-
-    /**
      * Strategy for generating a network with maximum reliability and a cost contraint.
      * @param G
      * @param c
      * @return
      */
-    public RCGraph maximumReliability_CostConstraint(RCGraph G, double c) {
+    private RCGraph maximumReliability_CostConstraint(RCGraph G, double c) {
         RCGraph copyG = new RCGraph(G);
         build_maxR2CSpanningTree(copyG);
         double incremental_C = 0;
@@ -281,7 +340,6 @@ public class Computation {
             incremental_C = computeCost(copyG);
             if (incremental_C > c)
                 copyG.getAdjacencyMatrix()[ij] -= 1;
-            Tools.print(computeNetworkReliability(copyG));
         }
         incremental_C = computeCost(copyG);
         if (incremental_C < c)
@@ -290,7 +348,7 @@ public class Computation {
             return G;
     }
 
-    public RCGraph maximumReliability_CostConstraint1(RCGraph G, double c) {
+    private RCGraph maximumReliability_CostConstraint1(RCGraph G, double c) {
         RCGraph copyG = new RCGraph(G);
         build_maxR2CSpanningTree(copyG);
         double acceptable_r2c = ((RCEdge)sorted_edges.get(sorted_edges.size()/2)).r2cRatio();
@@ -331,87 +389,12 @@ public class Computation {
         else
             return G;
     }
-    
-    /**
-     * PROBLEM: COST CONSTRAINT, FIND MAXIMUM R GRAPH
-     * Use this method to find the best available network graph (the best out of 4 available strategies).
-     * Runs all 2 strategies, and returns the one that scores the best balance between cost and reliability.
-     * Each of the 2 strategies is evaluated and a score is assigned to each.
-     * See
-     * @param G
-     * @param c
-     * @return
-     */
-    public RCGraph getBestMaxR_Cconstraint(RCGraph G, double c) {
-        RCGraph copyG1, copyG2;
-        copyG1 = maximumReliability_CostConstraint(G, c);
-        copyG2 = maximumReliability_CostConstraint1(G, c);
-
-        double c1, c2, r1, r2;
-        r1 = computeNetworkReliability(copyG1);
-        r2 = computeNetworkReliability(copyG2);
-        c1 = computeCost(copyG1);
-        c2 = computeCost(copyG2);
-
-        Tools.print("R1=" + r1 + "\nC1=" + c1);
-        Tools.print("R2=" + r2 + "\nC2=" + c2);
-
-        List<Double> rL = new ArrayList<>();
-        rL.add(r1);
-        rL.add(r2);
-        rL.sort((v1, v2) -> {
-            return (v1.compareTo(v2));
-        });
-
-        List<Double> cL = new ArrayList<>();
-        cL.add(c1);
-        cL.add(c2);
-        cL.sort((v1, v2) -> {
-            return (v1.compareTo(v2));
-        });
-
-        double cVar, rVar, avgC, avgR;
-        cVar = cL.get(1) - cL.get(0);
-        rVar = rL.get(1) - rL.get(0);
-        avgC = (cL.get(1) + cL.get(0)) / 2;
-        avgR = (rL.get(1) + rL.get(0)) / 2;
-        Tools.print("RVAR = " + rVar + "; CVAR = " + cVar);
-        Tools.print("AVGR = " + avgR + "; AVGC= " + avgC);
-        double[] win = new double[2];
-        for (int i = 0; i < 2; i++) {
-            if (i == 0)
-                win[i] = r1 / c1;
-            else if (i == 1)
-                win[i] = r2 / c2;
-        }
-        double max = 0;
-        int winner = 0;
-        for (int i = 0; i < 2; i++) {
-            if (win[i] > max) {
-                max = win[i];
-                winner = i;
-            }
-        }
-        Tools.print("scores");
-        for (double d : win) {
-            System.out.print(d + ",");
-        }
-        Tools.print("");
-        switch (winner) {
-            case 0:
-                return copyG1;
-            case 1:
-                return copyG2;
-            default:
-                return copyG1;
-        }
-    }
 
     /**
      * generates a maximal reliability to ratio spanning tree for input graph
      * @param G
      */
-    public void build_maxR2CSpanningTree(RCGraph G) {
+    private void build_maxR2CSpanningTree(RCGraph G) {
         sortEdges(G, false);
         spanningTree(G);
     }
@@ -420,7 +403,7 @@ public class Computation {
      * generates a minimal cost spanning tree for input graph
      * @param G
      */
-    public void build_minCostSpanningTree(RCGraph G) {
+    private void build_minCostSpanningTree(RCGraph G) {
         sortEdges(G, true);
         spanningTree(G);
     }
@@ -569,30 +552,11 @@ public class Computation {
             RCEdge e = (RCEdge) (G.getE()[ij]);
             double nR = e.getReliability();
             while (G.getAdjacencyMatrix()[ij] > 1) {
-                nR = rParalel(nR, e.getReliability());
+                nR = GraphTools.rParalel(nR, e.getReliability());
                 G.getAdjacencyMatrix()[ij]--;
             }
             e.setReliability(nR);
         }
     }
 
-    /**
-     * returns the reliability value of two edges in series
-     * @param r1
-     * @param r2
-     * @return
-     */
-    public static double rSeries(double r1, double r2) {
-        return r1 * r2;
-    }
-
-    /**
-     * returns the reliability value of two edges in parallel
-     * @param r1
-     * @param r2
-     * @return
-     */
-    public static double rParalel(double r1, double r2) {
-        return r1 + r2 - rSeries(r1, r2);
-    }
 }

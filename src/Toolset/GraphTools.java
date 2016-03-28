@@ -83,7 +83,7 @@ public class GraphTools {
                     continue;
                 if (G.getAdjacencyMatrix()[ij2] != 0) {
                     RCEdge e = (RCEdge) G.getE()[ij2];
-                    double newR = Computation.rParalel(e.getReliability(), ((RCEdge) G.getE()[edgeIndex]).getReliability());
+                    double newR = rParalel(e.getReliability(), ((RCEdge) G.getE()[edgeIndex]).getReliability());
                     e.setReliability(newR);
                 }
             }
@@ -234,4 +234,23 @@ public class GraphTools {
         Tools.print("");
     }
 
+    /**
+     * returns the reliability value of two edges in series
+     * @param r1
+     * @param r2
+     * @return
+     */
+    public static double rSeries(double r1, double r2) {
+        return r1 * r2;
+    }
+
+    /**
+     * returns the reliability value of two edges in parallel
+     * @param r1
+     * @param r2
+     * @return
+     */
+    public static double rParalel(double r1, double r2) {
+        return r1 + r2 - rSeries(r1, r2);
+    }
 }

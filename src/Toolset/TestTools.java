@@ -149,11 +149,11 @@ public class TestTools {
         winC[2] = new Integer(0);
 
         long time = System.currentTimeMillis(), time1, time2 = time;
-        int tests = 20, total = tests;
+        int tests = 1, total = tests;
         int cVar = 0;
         double rVar = 0, avgC = 0, avgR = 0;
         while (tests > 0) {
-            n = 20;
+            n = 15;
             G = new RCGraph(n);
             Random random = new Random(System.currentTimeMillis());
             for (int ii = 0; ii < G.getN(); ii++) {
@@ -164,9 +164,11 @@ public class TestTools {
                     ((RCEdge) G.getE()[GraphTools.matrixToArrayIndex(ii, jj, G.getN())]).setReliability(0.8 + 0.2 * random.nextDouble());
                 }
             }
-            G = C.getBestMinC_Rconstraint(G, 0.7);
+            G = C.getBestMaxR_Cconstraint(G, 200);
+            time1 = System.currentTimeMillis();
             Tools.print("R = " + C.computeNetworkReliability(G) + ", C = " + C.computeCost(G));
-            Tools.print("\n\n\n");
+            time2 = System.currentTimeMillis();
+            Tools.print("\n\n\nTIME: " + (time2-time1));
 //            GG = new RCGraph(G);
 //            GGG = new RCGraph(G);
 //
@@ -239,11 +241,11 @@ public class TestTools {
 //        Tools.print("RVAR = " + rVar + "; CVAR = " + cVar);
 //        Tools.print("AVGR = " + avgR + "; AVGC= " + avgC);
 
-        C = new Computation();
-        RCGraph GGGG = Tools.buildGraphFromFile("Prj1_input.txt", null, null);
-
-        Tools.connectFromFile("sangmoon.txt",GGGG);
-        Tools.print("TEST: R = " + C.computeNetworkReliability(GGGG) + ", C = " + C.computeCost(GGGG));
+//        C = new Computation();
+//        RCGraph GGGG = Tools.buildGraphFromFile("Prj1_input.txt", null, null);
+//
+//        Tools.connectFromFile("sangmoon.txt",GGGG);
+//        Tools.print("TEST: R = " + C.computeNetworkReliability(GGGG) + ", C = " + C.computeCost(GGGG));
         //V = new View(GGGG);
 //        GraphTools.printPrettyAdjMatrix(GGGG);
 //        GraphTools.printPrettyAdjList(GGGG);

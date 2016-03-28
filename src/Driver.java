@@ -41,7 +41,7 @@ public class Driver {
             Tools.print("\nPicked Best Graph with: R = " + C.computeNetworkReliability(G) + ", C = " + C.computeCost(G));
 
             GraphTools.printPrettyAdjList(G);
-            V = new View(G);
+            V = new View(G,1);
         }
     }
 }

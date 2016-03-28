@@ -32,10 +32,10 @@ public class Driver {
             Tools.print("COMPUTED RESULTS:");
 
             // compute results
-            if (a_b[0] == 0) {
+            if (a_b[0] == 1) {
                 G = C.getBestMinC_Rconstraint(G, desired_R_C[0]);
             } else {
-                G = C.maximumReliability_CostConstraint1(G, desired_R_C[1]);
+                G = C.getBestMaxR_Cconstraint(G, desired_R_C[1]);
             }
 
             Tools.print("\nPicked Best Graph with: R = " + C.computeNetworkReliability(G) + ", C = " + C.computeCost(G));

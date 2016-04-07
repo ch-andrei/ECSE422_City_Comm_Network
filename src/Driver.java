@@ -32,7 +32,7 @@ public class Driver {
             Tools.print("COMPUTED RESULTS:");
 
             // compute results
-            if (a_b[0] == 1) {
+            if (a_b[0] == 0) {
                 G = C.getBestMinC_Rconstraint(G, desired_R_C[0]);
             } else {
                 G = C.getBestMaxR_Cconstraint(G, desired_R_C[1]);
